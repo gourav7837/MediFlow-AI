@@ -1,0 +1,17 @@
+{
+  "name": "mediflow-ai",
+  "version": "1.0.0",
+  "description": "MediFlow AI - Hackathon 4-Hour Clinic Management System with Google Gemma 4 AI & Firebase",
+  "scripts": {
+    "start": "npm run start:backend",
+    "start:backend": "cd backend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build": "cd frontend && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
+

@@ -1,0 +1,867 @@
+{
+  "users": [
+    {
+      "role": "admin",
+      "avatar": "👨‍💼",
+      "id": "usr_admin",
+      "email": "admin@mediflow.ai",
+      "displayName": "Dr. Arthur Sterling",
+      "firestoreId": "usr_admin"
+    },
+    {
+      "avatar": "👨‍⚕️",
+      "doctorId": "DOC-101",
+      "email": "dr.sharma@mediflow.ai",
+      "id": "usr_doc_1",
+      "displayName": "Dr. Rajesh Sharma, MD",
+      "role": "doctor",
+      "firestoreId": "usr_doc_1"
+    },
+    {
+      "id": "usr_doc_2",
+      "displayName": "Dr. Sarah Mitchell, MD",
+      "avatar": "👩‍⚕️",
+      "role": "doctor",
+      "doctorId": "DOC-102",
+      "email": "dr.mitchell@mediflow.ai",
+      "firestoreId": "usr_doc_2"
+    },
+    {
+      "avatar": "🧑‍💼",
+      "email": "reception@mediflow.ai",
+      "id": "usr_rec_1",
+      "displayName": "Alex Carter",
+      "role": "receptionist",
+      "firestoreId": "usr_rec_1"
+    }
+  ],
+  "patients": [
+    {
+      "fullName": "Rahul Sharma",
+      "gender": "Male",
+      "phoneNumber": "+91 98765 43210",
+      "id": "pat_1",
+      "address": "42 Lotus Enclave, New Delhi",
+      "patientId": "PAT-1092",
+      "emergencyContact": "Pooja Sharma (Wife) - +91 98765 43211",
+      "relevantMedicalHistory": "Type 2 Diabetes Mellitus (managed on Metformin), seasonal allergic rhinitis.",
+      "registeredAt": "2026-01-10T09:00:00.000Z",
+      "email": "rahul.sharma@example.com",
+      "dob": "1992-05-14",
+      "allergies": [
+        "Penicillin",
+        "Sulfa Drugs"
+      ],
+      "age": 34,
+      "firestoreId": "pat_1"
+    },
+    {
+      "address": "15 Crescent Park, South Ext, New Delhi",
+      "registeredAt": "2026-02-15T11:30:00.000Z",
+      "phoneNumber": "+91 98123 45678",
+      "allergies": [
+        "None reported"
+      ],
+      "email": "priya.patel@example.com",
+      "id": "pat_2",
+      "patientId": "PAT-1093",
+      "dob": "1981-08-22",
+      "gender": "Female",
+      "emergencyContact": "Kunal Patel (Husband) - +91 98123 45679",
+      "fullName": "Priya Patel",
+      "age": 45,
+      "relevantMedicalHistory": "Bilateral knee osteoarthritis, mild hypertension.",
+      "firestoreId": "pat_2"
+    },
+    {
+      "patientId": "PAT-1094",
+      "relevantMedicalHistory": "Routine fitness evaluation, no chronic illness.",
+      "id": "pat_3",
+      "fullName": "Amit Kumar",
+      "age": 28,
+      "dob": "1998-11-03",
+      "allergies": [
+        "Aspirin"
+      ],
+      "phoneNumber": "+91 97654 32109",
+      "address": "78 Ring Road, Gurugram",
+      "email": "amit.k@example.com",
+      "emergencyContact": "Sunita Kumar (Mother) - +91 97654 32110",
+      "gender": "Male",
+      "registeredAt": "2026-03-01T14:15:00.000Z",
+      "firestoreId": "pat_3"
+    },
+    {
+      "gender": "Female",
+      "allergies": [
+        "Codeine"
+      ],
+      "dob": "1974-03-19",
+      "age": 52,
+      "phoneNumber": "+91 96543 21098",
+      "registeredAt": "2026-03-20T10:00:00.000Z",
+      "patientId": "PAT-1095",
+      "address": "B-12 Vasant Kunj, New Delhi",
+      "id": "pat_4",
+      "fullName": "Sunita Verma",
+      "emergencyContact": "Rohan Verma (Son) - +91 96543 21099",
+      "relevantMedicalHistory": "Hypothyroidism (Eltroxin 50mcg daily), hyperlipidemia.",
+      "email": "sunita.v@example.com",
+      "firestoreId": "pat_4"
+    }
+  ],
+  "doctors": [
+    {
+      "availableDays": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "phone": "+91 99887 76655",
+      "status": "Available",
+      "roomNumber": "Room 101",
+      "avatar": "👨‍⚕️",
+      "timeSlots": [
+        "09:00 AM",
+        "10:00 AM",
+        "11:00 AM",
+        "12:00 PM",
+        "03:00 PM",
+        "04:00 PM",
+        "05:00 PM"
+      ],
+      "consultationFee": 800,
+      "fullName": "Dr. Rajesh Sharma",
+      "specialization": "Internal Medicine & Cardiology",
+      "id": "doc_1",
+      "experienceYears": 16,
+      "doctorId": "DOC-101",
+      "email": "dr.sharma@mediflow.ai",
+      "degree": "MBBS, MD (Medicine)",
+      "firestoreId": "doc_1"
+    },
+    {
+      "experienceYears": 12,
+      "phone": "+91 99112 23344",
+      "roomNumber": "Room 102",
+      "fullName": "Dr. Sarah Mitchell",
+      "status": "In Consultation",
+      "id": "doc_2",
+      "doctorId": "DOC-102",
+      "specialization": "General Practice & Internal Medicine",
+      "avatar": "👩‍⚕️",
+      "timeSlots": [
+        "10:00 AM",
+        "11:00 AM",
+        "01:00 PM",
+        "02:00 PM",
+        "04:00 PM",
+        "05:30 PM"
+      ],
+      "degree": "MBBS, MD, FRCP",
+      "availableDays": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "consultationFee": 750,
+      "email": "dr.mitchell@mediflow.ai",
+      "firestoreId": "doc_2"
+    },
+    {
+      "consultationFee": 900,
+      "email": "dr.ananya@mediflow.ai",
+      "specialization": "Orthopedics & Joint Specialist",
+      "degree": "MBBS, MS (Ortho)",
+      "id": "doc_3",
+      "avatar": "👩‍⚕️",
+      "fullName": "Dr. Ananya Roy",
+      "roomNumber": "Room 103",
+      "availableDays": [
+        "Tuesday",
+        "Thursday",
+        "Saturday"
+      ],
+      "status": "Available",
+      "experienceYears": 14,
+      "timeSlots": [
+        "11:00 AM",
+        "12:30 PM",
+        "03:30 PM",
+        "05:00 PM"
+      ],
+      "doctorId": "DOC-103",
+      "phone": "+91 99554 43322",
+      "firestoreId": "doc_3"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "apt_1",
+      "appointmentDate": "2026-10-31",
+      "bookedVia": "Voice Receptionist",
+      "patientId": "PAT-1092",
+      "reasonForVisit": "High fever 101F, dry cough for 3 days",
+      "createdAt": "2026-10-31T04:30:00.000Z",
+      "doctorName": "Dr. Sarah Mitchell",
+      "appointmentTime": "10:00 AM",
+      "doctorId": "DOC-102",
+      "appointmentId": "APT-801",
+      "status": "In Consultation",
+      "tokenNumber": "A34",
+      "patientName": "Rahul Sharma",
+      "firestoreId": "apt_1"
+    },
+    {
+      "reasonForVisit": "Voice Scheduled Consultation",
+      "appointmentTime": "11:00 AM",
+      "patientId": "PAT-1092",
+      "bookedVia": "Voice Receptionist",
+      "doctorId": "DOC-101",
+      "id": "apt_1793425276241",
+      "appointmentDate": "tomorrow",
+      "doctorName": "Dr. Rajesh Sharma",
+      "patientName": "Rahul Sharma",
+      "appointmentId": "APT-809",
+      "status": "Confirmed",
+      "createdAt": "2026-10-31T05:41:16.241Z",
+      "tokenNumber": "A42",
+      "firestoreId": "apt_1793425276241"
+    },
+    {
+      "reasonForVisit": "General Wellness Checkup",
+      "id": "apt_1793428346955",
+      "doctorName": "Dr. Sarah Mitchell",
+      "appointmentId": "APT-810",
+      "status": "Confirmed",
+      "createdAt": "2026-10-31T06:32:26.955Z",
+      "appointmentDate": "2026-11-01",
+      "patientId": "PAT-1092",
+      "doctorId": "DOC-102",
+      "appointmentTime": "02:00 PM",
+      "patientName": "Rahul Sharma",
+      "tokenNumber": "A43",
+      "bookedVia": "Staff Portal",
+      "firestoreId": "apt_1793428346955"
+    },
+    {
+      "bookedVia": "Reception Desk",
+      "id": "apt_2",
+      "doctorName": "Dr. Ananya Roy",
+      "patientName": "Priya Patel",
+      "appointmentTime": "11:00 AM",
+      "appointmentId": "APT-802",
+      "doctorId": "DOC-103",
+      "patientId": "PAT-1093",
+      "reasonForVisit": "Bilateral knee pain and morning stiffness",
+      "tokenNumber": "A35",
+      "createdAt": "2026-10-31T04:45:00.000Z",
+      "status": "In Consultation",
+      "appointmentDate": "2026-10-31",
+      "firestoreId": "apt_2"
+    },
+    {
+      "appointmentDate": "2026-10-31",
+      "status": "Pending",
+      "doctorId": "DOC-101",
+      "createdAt": "2026-10-31T05:00:00.000Z",
+      "doctorName": "Dr. Rajesh Sharma",
+      "id": "apt_3",
+      "patientId": "PAT-1094",
+      "appointmentTime": "03:00 PM",
+      "reasonForVisit": "Blood pressure evaluation and routine review",
+      "patientName": "Amit Kumar",
+      "bookedVia": "Voice Receptionist",
+      "tokenNumber": "A36",
+      "appointmentId": "APT-803",
+      "firestoreId": "apt_3"
+    },
+    {
+      "appointmentDate": "2026-11-01",
+      "bookedVia": "Patient Portal",
+      "doctorId": "DOC-101",
+      "id": "apt_4",
+      "patientId": "PAT-1095",
+      "doctorName": "Dr. Rajesh Sharma",
+      "reasonForVisit": "Thyroid report review and prescription refill",
+      "tokenNumber": "A37",
+      "appointmentId": "APT-804",
+      "patientName": "Sunita Verma",
+      "createdAt": "2026-10-30T10:00:00.000Z",
+      "appointmentTime": "11:00 AM",
+      "status": "Confirmed",
+      "firestoreId": "apt_4"
+    },
+    {
+      "id": "apt_1793429282843",
+      "appointmentId": "APT-811",
+      "patientId": "PAT-1092",
+      "patientName": "Rahul Sharma",
+      "doctorId": "DOC-101",
+      "doctorName": "Dr. Rajesh Sharma",
+      "appointmentDate": "2026-10-31",
+      "appointmentTime": "11:30 AM",
+      "reasonForVisit": "General Clinical Review",
+      "status": "Confirmed",
+      "bookedVia": "Staff Portal",
+      "tokenNumber": "A44",
+      "createdAt": "2026-10-31T06:48:02.843Z"
+    }
+  ],
+  "consultations": [
+    {
+      "followUp": "Review after 3-5 days if fever persists > 100°F.",
+      "id": "con_1",
+      "doctorId": "DOC-102",
+      "vitals": {
+        "temperature": "101.2 °F",
+        "bloodPressure": "120/80 mmHg",
+        "spo2": "98%",
+        "pulseRate": "84 bpm"
+      },
+      "date": "2026-10-31",
+      "chiefComplaints": [
+        "101°F Fever for 3 days",
+        "Dry cough",
+        "Mild throat discomfort"
+      ],
+      "diagnosis": [
+        "Acute Upper Respiratory Tract Infection (URTI) with Pyrexia"
+      ],
+      "patientName": "Rahul Sharma",
+      "doctorName": "Dr. Sarah Mitchell",
+      "patientId": "PAT-1092",
+      "treatmentPlan": [
+        {
+          "frequency": "TDS (1-1-1)",
+          "duration": "3 days",
+          "medicine": "Tab. Paracetamol",
+          "dosage": "650 mg",
+          "instructions": "After food for fever relief"
+        },
+        {
+          "medicine": "Tab. Azithromycin",
+          "instructions": "1 hour before lunch, once daily",
+          "dosage": "500 mg",
+          "frequency": "OD (1-0-0)",
+          "duration": "3 days"
+        }
+      ],
+      "generalAdvice": "Drink 2.5 - 3 Liters water daily, warm salt water gargle twice daily, strict bed rest.",
+      "appointmentId": "APT-801",
+      "firestoreId": "con_1"
+    },
+    {
+      "id": "con_1793429296254",
+      "consultationId": "CON-502",
+      "appointmentId": "",
+      "patientId": "PAT-1092",
+      "patientName": "Rohan Sharma",
+      "doctorId": "DOC-1",
+      "doctorName": "Dr. Sarah Patel",
+      "date": "2026-10-31",
+      "chiefComplaints": [
+        "Routine review"
+      ],
+      "vitals": {
+        "bp": "130/84",
+        "pulse": "78 bpm",
+        "temp": "98.4 F",
+        "spO2": "99%"
+      },
+      "clinicalObservations": "",
+      "doctorNotes": "",
+      "diagnosis": [
+        "Atypical Angina / Exertional Chest Discomfort under evaluation"
+      ],
+      "treatmentPlan": [],
+      "recommendedTests": [],
+      "followUpDate": "",
+      "status": "Completed",
+      "createdAt": "2026-10-31T06:48:16.255Z"
+    }
+  ],
+  "medical_reports": [
+    {
+      "fileUrl": "/sample-reports/cbc_rahul_sharma.pdf",
+      "patientId": "PAT-1092",
+      "id": "rep_1",
+      "patientName": "Rahul Sharma",
+      "doctorReferred": "Dr. Rajesh Sharma",
+      "aiExplanation": "The elevated White Blood Cells (TLC 11,800) and elevated ESR indicate active immune response combating an acute infection.",
+      "reportDate": "2026-10-28",
+      "laboratoryRemarks": "Mild polymorphonuclear leukocytosis with elevated ESR suggestive of acute bacterial or reactive inflammatory process.",
+      "laboratory": "Apex Diagnostic Labs, New Delhi",
+      "testParameters": [
+        {
+          "parameter": "Hemoglobin (Hb)",
+          "value": "14.2",
+          "status": "Normal",
+          "unit": "g/dL",
+          "referenceRange": "13.0 - 17.0"
+        },
+        {
+          "unit": "/mcL",
+          "parameter": "Total Leukocyte Count (TLC)",
+          "value": "11,800",
+          "status": "High",
+          "referenceRange": "4,000 - 10,000"
+        },
+        {
+          "status": "Normal",
+          "value": "240,000",
+          "unit": "/mcL",
+          "parameter": "Platelet Count",
+          "referenceRange": "150,000 - 450,000"
+        },
+        {
+          "status": "High",
+          "unit": "%",
+          "parameter": "Neutrophils",
+          "value": "78",
+          "referenceRange": "40 - 70"
+        },
+        {
+          "value": "16",
+          "status": "Low",
+          "referenceRange": "20 - 40",
+          "unit": "%",
+          "parameter": "Lymphocytes"
+        },
+        {
+          "status": "High",
+          "unit": "mm/hr",
+          "value": "28",
+          "referenceRange": "0 - 15",
+          "parameter": "ESR (1st hour)"
+        }
+      ],
+      "reportType": "Complete Blood Count (CBC) with ESR",
+      "firestoreId": "rep_1"
+    },
+    {
+      "fileUrl": "/sample-reports/tsh_sunita_verma.pdf",
+      "patientId": "PAT-1095",
+      "reportDate": "2026-10-25",
+      "patientName": "Sunita Verma",
+      "doctorReferred": "Dr. Rajesh Sharma",
+      "aiExplanation": "TSH is slightly above optimal reference limit, suggesting the current thyroid dosage may require minor titration by clinician.",
+      "laboratory": "Quest Diagnostics PathLab",
+      "testParameters": [
+        {
+          "parameter": "Free Triiodothyronine (FT3)",
+          "status": "Normal",
+          "value": "2.8",
+          "unit": "pg/mL",
+          "referenceRange": "2.0 - 4.4"
+        },
+        {
+          "parameter": "Free Thyroxine (FT4)",
+          "referenceRange": "0.8 - 1.8",
+          "status": "Normal",
+          "value": "1.1",
+          "unit": "ng/dL"
+        },
+        {
+          "parameter": "Thyroid Stimulating Hormone (TSH)",
+          "unit": "uIU/mL",
+          "value": "5.85",
+          "status": "High",
+          "referenceRange": "0.40 - 4.20"
+        }
+      ],
+      "laboratoryRemarks": "Mild elevated TSH with normal FT4 levels. Consistent with subclinical hypothyroidism; correlate with dosage of levothyroxine.",
+      "reportType": "Thyroid Profile (Free T3, Free T4, TSH)",
+      "id": "rep_2",
+      "firestoreId": "rep_2"
+    },
+    {
+      "id": "rep_1793429296261",
+      "reportId": "REP-703",
+      "patientId": "PAT-1092",
+      "patientName": "Rohan Sharma",
+      "reportType": "Cardiology - 12-Lead Rest ECG & Lipid Profile",
+      "reportCategory": "Cardiology",
+      "reportDate": "2026-10-31",
+      "laboratory": "Metropolis Diagnostics Lab",
+      "doctorReferred": "Dr. Sarah Mitchell, MD",
+      "laboratoryRemarks": "Uploaded by patient for clinical evaluation.",
+      "fileName": "cardiology.pdf",
+      "fileType": "application/pdf",
+      "fileData": "data:application/pdf;base64,JVBERi0xLjQKJcTl8uXr...",
+      "uploadedBy": "Patient",
+      "uploadedAt": "2026-10-31T06:48:16.261Z",
+      "status": "Uploaded",
+      "doctorApproved": false,
+      "testParameters": [
+        {
+          "parameter": "Cardiology Test Parameter",
+          "value": "Assessed",
+          "unit": "-",
+          "referenceRange": "Normal",
+          "status": "Normal"
+        }
+      ],
+      "aiExplanation": "Awaiting doctor clinical review and Gemma 4 diagnostic breakdown."
+    }
+  ],
+  "voice_sessions": [
+    {
+      "id": "v_sess_1",
+      "startTime": "2026-10-31T05:00:00.000Z",
+      "patientName": "Rahul Sharma",
+      "detectedIntent": "book_appointment",
+      "status": "Completed",
+      "transcript": [
+        {
+          "sender": "patient",
+          "text": "Hello, I want to book an appointment."
+        },
+        {
+          "sender": "ai",
+          "text": "Welcome to MediFlow Clinic! I am your AI receptionist. May I know your name?"
+        },
+        {
+          "sender": "patient",
+          "text": "Rahul Sharma"
+        },
+        {
+          "sender": "ai",
+          "text": "Thank you Mr. Sharma. Which doctor would you like to consult?"
+        },
+        {
+          "sender": "patient",
+          "text": "Dr. Sharma tomorrow 11 AM."
+        },
+        {
+          "sender": "ai",
+          "text": "Dr. Rajesh Sharma is available tomorrow at 11:00 AM. Shall I confirm your booking?"
+        },
+        {
+          "sender": "patient",
+          "text": "Yes, please confirm."
+        },
+        {
+          "sender": "ai",
+          "text": "Your appointment APT-803 has been confirmed for tomorrow at 11:00 AM with Dr. Rajesh Sharma."
+        }
+      ],
+      "appointmentCreated": "APT-803"
+    }
+  ],
+  "clinic_settings": {
+    "clinicName": "MediFlow Intelligent Clinic",
+    "tagline": "Smarter Clinics. Better Care. Powered by AI.",
+    "phone": "+91 (11) 4567-8900",
+    "emergencyHelpline": "108 / +91 99999 11111",
+    "address": "MediFlow Medical Tower, Suite 400, Outer Ring Road, New Delhi 110029",
+    "openingHours": {
+      "weekdays": "08:30 AM - 08:00 PM",
+      "saturday": "09:00 AM - 05:00 PM",
+      "sunday": "Closed / Emergency Only"
+    },
+    "departments": [
+      "General Medicine",
+      "Cardiology",
+      "Orthopedics",
+      "Pediatrics",
+      "Diagnostics Lab"
+    ]
+  },
+  "audit_logs": [
+    {
+      "action": "APPOINTMENT_CREATED",
+      "details": "Booked Token #A34 for patient Rahul Sharma with Dr. Sarah Mitchell",
+      "actor": "AI Voice Receptionist",
+      "timestamp": "2026-10-31T04:30:00.000Z",
+      "id": "log_1",
+      "firestoreId": "log_1"
+    },
+    {
+      "action": "VOICE_APPOINTMENT_BOOKED",
+      "timestamp": "2026-10-31T05:41:16.241Z",
+      "actor": "AI Voice Receptionist",
+      "id": "log_1793425276241",
+      "details": "Booked APT-809 for Rahul Sharma with Dr. Rajesh Sharma",
+      "firestoreId": "log_1793425276241"
+    },
+    {
+      "action": "WHATSAPP_MESSAGE_DISPATCHED",
+      "id": "log_1793426879803",
+      "actor": "WhatsApp Automation",
+      "timestamp": "2026-10-31T06:07:59.803Z",
+      "details": "Sent [APPOINTMENT_CONFIRMATION] to Rahul Sharma (+91 98765 43210)",
+      "firestoreId": "log_1793426879803"
+    },
+    {
+      "action": "APPOINTMENT_UPDATED",
+      "actor": "Admin",
+      "id": "log_1793427301896",
+      "timestamp": "2026-10-31T06:15:01.896Z",
+      "details": "Updated status/time for APT-802 to [In Consultation]",
+      "firestoreId": "log_1793427301896"
+    },
+    {
+      "actor": "Dr. Arthur Sterling",
+      "action": "USER_LOGIN",
+      "timestamp": "2026-10-31T06:30:35.213Z",
+      "id": "log_1793428235213",
+      "details": "Logged in with role [admin]",
+      "firestoreId": "log_1793428235213"
+    },
+    {
+      "timestamp": "2026-10-31T06:32:26.957Z",
+      "actor": "System",
+      "id": "log_1793428346957",
+      "details": "Booked APT-810 (A43) for Rahul Sharma with Dr. Sarah Mitchell",
+      "action": "APPOINTMENT_BOOKED",
+      "firestoreId": "log_1793428346957"
+    },
+    {
+      "id": "log_2",
+      "action": "PATIENT_REGISTERED",
+      "details": "Registered new patient Priya Patel (PAT-1093)",
+      "actor": "Receptionist (Alex Carter)",
+      "timestamp": "2026-10-31T04:45:00.000Z",
+      "firestoreId": "log_2"
+    },
+    {
+      "action": "VOICE_SESSION_COMPLETED",
+      "details": "Voice booking session #v_sess_1 successfully verified and recorded",
+      "actor": "Gemma 4 Voice Engine",
+      "timestamp": "2026-10-31T05:00:00.000Z",
+      "id": "log_3",
+      "firestoreId": "log_3"
+    },
+    {
+      "id": "log_1793429098457",
+      "timestamp": "2026-10-31T06:44:58.457Z",
+      "action": "WHATSAPP_DISCONNECTED",
+      "actor": "Admin",
+      "details": "Disconnected WhatsApp session"
+    },
+    {
+      "id": "log_1793429282844",
+      "timestamp": "2026-10-31T06:48:02.844Z",
+      "action": "APPOINTMENT_BOOKED",
+      "actor": "System",
+      "details": "Booked APT-811 (A44) for Rahul Sharma with Dr. Rajesh Sharma"
+    },
+    {
+      "id": "log_1793429296255",
+      "timestamp": "2026-10-31T06:48:16.255Z",
+      "action": "CONSULTATION_SAVED",
+      "actor": "Dr. Sarah Patel",
+      "details": "Completed consultation for Rohan Sharma"
+    },
+    {
+      "id": "log_1793429296258",
+      "timestamp": "2026-10-31T06:48:16.258Z",
+      "action": "PRESCRIPTION_CREATED",
+      "actor": "Dr. Sarah Patel",
+      "details": "Created prescription RX-903 for Rohan Sharma"
+    },
+    {
+      "id": "log_1793429296262",
+      "timestamp": "2026-10-31T06:48:16.262Z",
+      "action": "REPORT_UPLOADED",
+      "actor": "Patient",
+      "details": "Uploaded new Cardiology - 12-Lead Rest ECG & Lipid Profile (cardiology.pdf)"
+    }
+  ],
+  "whatsapp_messages": [
+    {
+      "templateType": "APPOINTMENT_CONFIRMATION",
+      "messageId": "wa_1793426879803",
+      "patientId": "PAT-1092",
+      "patientName": "Rahul Sharma",
+      "direction": "Outbound",
+      "sentAt": "2026-10-31T06:07:59.803Z",
+      "status": "Delivered",
+      "content": "Hello Rahul Sharma!\n\nYour appointment has been confirmed.\n\nClinic: MediFlow Central Clinic\nDoctor: Dr. Sarah Mitchell\nDate: Tomorrow\nTime: 11:00 AM\nToken: #A38\n\nThank you for choosing MediFlow.",
+      "phoneNumber": "+91 98765 43210",
+      "firestoreId": "PAT-1092"
+    },
+    {
+      "messageId": "wa_1793429296258",
+      "patientId": "PAT-1092",
+      "patientName": "Rohan Sharma",
+      "phoneNumber": "+91 98765 43210",
+      "templateType": "PRESCRIPTION_READY",
+      "content": "Hello Rohan Sharma,\n\nYour prescription from Dr. Sarah Patel is now ready in your MediFlow Patient Health Portal.\n\nPrescription ID: RX-903\nDiagnosis: Atypical Angina / Exertional Chest Discomfort\n\nPlease check your portal to view or download the PDF copy.",
+      "status": "Delivered",
+      "sentAt": "2026-10-31T06:48:16.258Z",
+      "direction": "Outbound"
+    }
+  ],
+  "clinics": [
+    {
+      "clinicId": "clinic_main_01",
+      "name": "MediFlow Central Clinic",
+      "location": "Medical Tower, Suite 400, Outer Ring Road, New Delhi",
+      "phone": "+91 (11) 4567-8900",
+      "activeDoctorsCount": 3,
+      "plan": "Enterprise Healthcare SaaS"
+    },
+    {
+      "clinicId": "clinic_south_02",
+      "name": "MediFlow South Specialty Center",
+      "location": "C-8 Green Park, New Delhi",
+      "phone": "+91 (11) 4567-8901",
+      "activeDoctorsCount": 2,
+      "plan": "Clinic Standard"
+    }
+  ],
+  "patient_intakes": [
+    {
+      "intakeId": "intk_1",
+      "patientId": "PAT-1092",
+      "patientName": "Rahul Sharma",
+      "reportedConcerns": [
+        "Headache",
+        "Fever of 101F for 3 days",
+        "Dry cough"
+      ],
+      "reportedDuration": "3 days",
+      "existingPatient": true,
+      "appointmentRequested": true,
+      "preferredSpecialisation": "General Physician / Internal Medicine",
+      "language": "English",
+      "summaryStatus": "Pending Doctor Review",
+      "createdAt": "2026-10-31T05:05:00.000Z"
+    }
+  ],
+  "notifications": [
+    {
+      "notificationId": "notif_1",
+      "type": "REMINDER_24H",
+      "target": "Rahul Sharma",
+      "channel": "WhatsApp",
+      "scheduledTime": "2026-10-30T10:00:00.000Z",
+      "status": "Executed",
+      "appointmentId": "APT-801"
+    },
+    {
+      "notificationId": "notif_2",
+      "type": "FOLLOW_UP_SCHEDULE",
+      "target": "Rahul Sharma",
+      "channel": "WhatsApp",
+      "scheduledTime": "2026-11-05T09:00:00.000Z",
+      "status": "Pending",
+      "appointmentId": "APT-801",
+      "details": "Follow-up for URTI & Pyrexia review"
+    },
+    {
+      "notificationId": "notif_1793429296262",
+      "type": "NEW_REPORT_UPLOADED",
+      "target": "Dr. Sarah Mitchell",
+      "patientName": "Rohan Sharma",
+      "reportName": "Cardiology - 12-Lead Rest ECG & Lipid Profile",
+      "createdAt": "2026-10-31T06:48:16.262Z",
+      "status": "Unread"
+    }
+  ],
+  "prescriptions": [
+    {
+      "id": "rx_1",
+      "prescriptionId": "RX-901",
+      "patientId": "PAT-1092",
+      "patientName": "Rahul Sharma",
+      "doctorId": "DOC-102",
+      "doctorName": "Dr. Sarah Mitchell, MD",
+      "consultationId": "con_1",
+      "consultationDate": "2026-10-31",
+      "diagnosis": "Acute Upper Respiratory Tract Infection (URTI) with Pyrexia",
+      "medicines": [
+        {
+          "medicineName": "Tab. Paracetamol",
+          "strength": "650 mg",
+          "dosage": "1 tablet",
+          "frequency": "TDS (1-1-1)",
+          "duration": "3 days",
+          "instructions": "After food for fever relief"
+        },
+        {
+          "medicineName": "Tab. Azithromycin",
+          "strength": "500 mg",
+          "dosage": "1 tablet",
+          "frequency": "OD (1-0-0)",
+          "duration": "3 days",
+          "instructions": "1 hour before lunch, once daily"
+        }
+      ],
+      "recommendedTests": [
+        "Complete Blood Count (CBC) with ESR if fever > 100°F"
+      ],
+      "followUpDate": "2026-11-04",
+      "additionalNotes": "Drink 2.5 - 3 Liters water daily, warm salt water gargle twice daily, strict bed rest.",
+      "status": "Approved",
+      "approvedByDoctor": true,
+      "publishedToPortal": true,
+      "createdAt": "2026-10-31T05:00:00.000Z"
+    },
+    {
+      "id": "rx_2",
+      "prescriptionId": "RX-902",
+      "patientId": "PAT-1095",
+      "patientName": "Sunita Verma",
+      "doctorId": "DOC-101",
+      "doctorName": "Dr. Rajesh Sharma, MD",
+      "consultationId": "con_2",
+      "consultationDate": "2026-10-25",
+      "diagnosis": "Subclinical Hypothyroidism & Borderline Glycemia",
+      "medicines": [
+        {
+          "medicineName": "Tab. Thyronorm (Levothyroxine)",
+          "strength": "50 mcg",
+          "dosage": "1 tablet",
+          "frequency": "OD (1-0-0)",
+          "duration": "30 days",
+          "instructions": "Empty stomach in the morning with water"
+        },
+        {
+          "medicineName": "Tab. Metformin",
+          "strength": "500 mg",
+          "dosage": "1 tablet",
+          "frequency": "BD (1-0-1)",
+          "duration": "30 days",
+          "instructions": "Immediately after breakfast and dinner"
+        }
+      ],
+      "recommendedTests": [
+        "Repeat Serum TSH after 6 weeks",
+        "HbA1c & Fasting Blood Sugar"
+      ],
+      "followUpDate": "2026-11-25",
+      "additionalNotes": "Maintain low-carb diet, 30 minutes light brisk walk daily, avoid soya within 4 hours of thyroid pill.",
+      "status": "Approved",
+      "approvedByDoctor": true,
+      "publishedToPortal": true,
+      "createdAt": "2026-10-25T11:00:00.000Z"
+    },
+    {
+      "id": "rx_1793429296257",
+      "prescriptionId": "RX-903",
+      "patientId": "PAT-1092",
+      "patientName": "Rohan Sharma",
+      "doctorId": "DOC-1",
+      "doctorName": "Dr. Sarah Patel",
+      "consultationId": "con_1793429296257",
+      "consultationDate": "2026-10-31",
+      "diagnosis": "Atypical Angina / Exertional Chest Discomfort",
+      "medicines": [],
+      "recommendedTests": [],
+      "followUpDate": "2026-11-15",
+      "additionalNotes": "",
+      "status": "Approved",
+      "approvedByDoctor": true,
+      "publishedToPortal": true,
+      "createdAt": "2026-10-31T06:48:16.257Z"
+    }
+  ]
+}
