@@ -34,8 +34,8 @@ import { PrescriptionPrintModal } from './PrescriptionPrintModal';
 
 export const PatientPortal = () => {
   const { currentUser } = useAuth();
-  const patientId = currentUser?.patientId || 'PAT-1092';
-  const patientName = currentUser?.displayName || 'Rahul Sharma';
+  const patientId = currentUser?.patientId || currentUser?.id || 'PAT-GUEST';
+  const patientName = currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Patient';
 
   // Navigation tab in Patient Portal
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -47,6 +47,7 @@ export const PatientPortal = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [reports, setReports] = useState([]);
   const [consultations, setConsultations] = useState([]);
+  const [clinicDoctors, setClinicDoctors] = useState([]);
 
   // Selected prescription for PDF modal
   const [selectedPrescription, setSelectedPrescription] = useState(null);
@@ -54,7 +55,7 @@ export const PatientPortal = () => {
   // 8-Step Appointment Booking State (PRD Section 8)
   const [bookingStep, setBookingStep] = useState(1);
   const [bookingSpecialty, setBookingSpecialty] = useState('General Practice');
-  const [bookingDoctor, setBookingDoctor] = useState({ id: 'DOC-102', name: 'Dr. Sarah Mitchell, MD', specialty: 'General Practice' });
+  const [bookingDoctor, setBookingDoctor] = useState(null);
   const [bookingDate, setBookingDate] = useState(new Date(Date.now() + 86400000).toISOString().split('T')[0]);
   const [bookingTime, setBookingTime] = useState('11:00 AM');
   const [bookingReason, setBookingReason] = useState('Routine review and follow-up on recent symptoms');
@@ -75,7 +76,7 @@ export const PatientPortal = () => {
   const [aiChatMessages, setAiChatMessages] = useState([
     {
       sender: 'assistant',
-      text: 'Namaste Rahul! I am your MediFlow AI Health Assistant. How can I help you today? You can ask about appointment preparation, clinic timings, doctor specialties, or report guidelines in English, Hindi, or Hinglish.'
+      text: `Hello ${patientName}! I am your MediFlow AI Health Assistant. How can I help you today? You can ask about appointment preparation, clinic timings, doctor specialties, or report guidelines in English, Hindi, or Hinglish.`
     }
   ]);
   const [userChatInput, setUserChatInput] = useState('');
@@ -117,6 +118,21 @@ export const PatientPortal = () => {
 
   useEffect(() => {
     loadPortalData();
+    fetch('/api/doctors')
+      .then(r => r.ok ? r.json() : [])
+      .then(docs => {
+        setClinicDoctors(docs);
+        if (docs.length > 0 && !bookingDoctor) {
+          setBookingDoctor({
+            id: docs[0].doctorId || docs[0].id,
+            name: docs[0].fullName,
+            specialty: docs[0].specialization || 'General Practice',
+            fee: `₹${docs[0].consultationFee || 800}`,
+            room: docs[0].roomNumber || 'Room 101'
+          });
+        }
+      })
+      .catch(() => {});
   }, [patientId]);
 
   // Handle 8-Step Appointment Booking
@@ -408,7 +424,7 @@ export const PatientPortal = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                   <div className="space-y-1 text-xs">
                     <span className="text-[10px] font-bold text-slate-400 uppercase">Consulting Physician</span>
-                    <h4 className="font-extrabold text-slate-900 text-sm">{upcomingApt.doctorName || 'Dr. Sarah Mitchell, MD'}</h4>
+                    <h4 className="font-extrabold text-slate-900 text-sm">{upcomingApt.doctorName || 'Attending Physician'}</h4>
                     <p className="text-slate-500 font-medium">Internal Medicine & General Practice</p>
                   </div>
 
@@ -607,32 +623,45 @@ export const PatientPortal = () => {
             {/* STEP 2: Doctor Selection */}
             {bookingStep === 2 && (
               <div className="space-y-4">
-                <p className="text-xs text-slate-600">Select an active attending physician in {bookingSpecialty}:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[
-                    { id: 'DOC-102', name: 'Dr. Sarah Mitchell, MD', specialty: 'General Practice & Internal Medicine', fee: '₹800', room: 'Suite 102' },
-                    { id: 'DOC-101', name: 'Dr. Rajesh Sharma, MD', specialty: 'Cardiology & Internal Medicine', fee: '₹1,000', room: 'Suite 101' },
-                    { id: 'DOC-103', name: 'Dr. Ananya Roy, MS', specialty: 'Orthopedics & Joint Specialist', fee: '₹900', room: 'Suite 103' }
-                  ].map(doc => (
-                    <button
-                      key={doc.id}
-                      onClick={() => {
-                        setBookingDoctor(doc);
-                        setBookingStep(3);
-                      }}
-                      className={`p-4 rounded-2xl border text-left transition-all space-y-1 ${
-                        bookingDoctor.id === doc.id ? 'border-teal-600 bg-teal-50/50 shadow-sm' : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <h4 className="font-extrabold text-slate-900 text-xs">{doc.name}</h4>
-                        <span className="font-black text-teal-700 text-xs">{doc.fee}</span>
-                      </div>
-                      <p className="text-[11px] text-slate-500">{doc.specialty}</p>
-                      <p className="text-[10px] text-slate-400 font-semibold">{doc.room} • OPD Available</p>
-                    </button>
-                  ))}
-                </div>
+                <p className="text-xs text-slate-600">Select an attending physician:</p>
+                {clinicDoctors.length === 0 ? (
+                  <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
+                    <p className="text-xs font-bold text-slate-700">No doctors currently registered in the clinic.</p>
+                    <p className="text-[11px] text-slate-500">Please contact clinic administration or register a doctor via the Doctor Portal.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {clinicDoctors.map(doc => {
+                      const docId = doc.doctorId || doc.id;
+                      const isSelected = bookingDoctor?.id === docId;
+                      return (
+                        <button
+                          key={docId}
+                          onClick={() => {
+                            setBookingDoctor({
+                              id: docId,
+                              name: doc.fullName,
+                              specialty: doc.specialization,
+                              fee: `₹${doc.consultationFee || 800}`,
+                              room: doc.roomNumber || 'Room 101'
+                            });
+                            setBookingStep(3);
+                          }}
+                          className={`p-4 rounded-2xl border text-left transition-all space-y-1 ${
+                            isSelected ? 'border-teal-600 bg-teal-50/50 shadow-sm' : 'border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-extrabold text-slate-900 text-xs">{doc.fullName}</h4>
+                            <span className="font-black text-teal-700 text-xs">₹{doc.consultationFee || 800}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-500">{doc.specialization}</p>
+                          <p className="text-[10px] text-slate-400 font-semibold">{doc.roomNumber || 'Room 101'} • {doc.status || 'Available'}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
@@ -992,7 +1021,7 @@ export const PatientPortal = () => {
             <div className="border-b border-slate-100 pb-3">
               <h2 className="text-lg font-black text-slate-900">Upload Diagnostic Lab Report</h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Upload your pathology reports (PDF, JPG, PNG) for Dr. Sarah Mitchell to review and analyze with Gemma 4.
+                Upload your pathology reports (PDF, JPG, PNG) for your clinician to review and analyze with Gemma 4.
               </p>
             </div>
 

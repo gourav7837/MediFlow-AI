@@ -216,3 +216,4 @@ export const AIPatientSummaryModal = ({ patient, summaryData, loading, onRegener
     </div>
   );
 };
+

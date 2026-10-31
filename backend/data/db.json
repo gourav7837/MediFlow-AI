@@ -1,559 +1,109 @@
 {
   "users": [
     {
-      "role": "admin",
-      "avatar": "👨‍💼",
-      "id": "usr_admin",
-      "email": "admin@mediflow.ai",
-      "displayName": "Dr. Arthur Sterling",
-      "firestoreId": "usr_admin"
-    },
-    {
-      "avatar": "👨‍⚕️",
-      "doctorId": "DOC-101",
-      "email": "dr.sharma@mediflow.ai",
-      "id": "usr_doc_1",
-      "displayName": "Dr. Rajesh Sharma, MD",
-      "role": "doctor",
-      "firestoreId": "usr_doc_1"
-    },
-    {
-      "id": "usr_doc_2",
-      "displayName": "Dr. Sarah Mitchell, MD",
-      "avatar": "👩‍⚕️",
-      "role": "doctor",
-      "doctorId": "DOC-102",
-      "email": "dr.mitchell@mediflow.ai",
-      "firestoreId": "usr_doc_2"
-    },
-    {
-      "avatar": "🧑‍💼",
-      "email": "reception@mediflow.ai",
-      "id": "usr_rec_1",
-      "displayName": "Alex Carter",
+      "id": "UOwgjqI33DTO12S8702LbaxEftG2",
+      "createdAt": "2026-10-31T07:53:33.220Z",
       "role": "receptionist",
-      "firestoreId": "usr_rec_1"
-    }
-  ],
-  "patients": [
-    {
-      "fullName": "Rahul Sharma",
-      "gender": "Male",
-      "phoneNumber": "+91 98765 43210",
-      "id": "pat_1",
-      "address": "42 Lotus Enclave, New Delhi",
-      "patientId": "PAT-1092",
-      "emergencyContact": "Pooja Sharma (Wife) - +91 98765 43211",
-      "relevantMedicalHistory": "Type 2 Diabetes Mellitus (managed on Metformin), seasonal allergic rhinitis.",
-      "registeredAt": "2026-01-10T09:00:00.000Z",
-      "email": "rahul.sharma@example.com",
-      "dob": "1992-05-14",
-      "allergies": [
-        "Penicillin",
-        "Sulfa Drugs"
-      ],
-      "age": 34,
-      "firestoreId": "pat_1"
+      "email": "demo@gmail.com",
+      "avatar": "🧑‍💼",
+      "displayName": "demo",
+      "firestoreId": "UOwgjqI33DTO12S8702LbaxEftG2"
     },
     {
-      "address": "15 Crescent Park, South Ext, New Delhi",
-      "registeredAt": "2026-02-15T11:30:00.000Z",
-      "phoneNumber": "+91 98123 45678",
-      "allergies": [
-        "None reported"
-      ],
-      "email": "priya.patel@example.com",
-      "id": "pat_2",
-      "patientId": "PAT-1093",
-      "dob": "1981-08-22",
-      "gender": "Female",
-      "emergencyContact": "Kunal Patel (Husband) - +91 98123 45679",
-      "fullName": "Priya Patel",
-      "age": 45,
-      "relevantMedicalHistory": "Bilateral knee osteoarthritis, mild hypertension.",
-      "firestoreId": "pat_2"
-    },
-    {
-      "patientId": "PAT-1094",
-      "relevantMedicalHistory": "Routine fitness evaluation, no chronic illness.",
-      "id": "pat_3",
-      "fullName": "Amit Kumar",
-      "age": 28,
-      "dob": "1998-11-03",
-      "allergies": [
-        "Aspirin"
-      ],
-      "phoneNumber": "+91 97654 32109",
-      "address": "78 Ring Road, Gurugram",
-      "email": "amit.k@example.com",
-      "emergencyContact": "Sunita Kumar (Mother) - +91 97654 32110",
-      "gender": "Male",
-      "registeredAt": "2026-03-01T14:15:00.000Z",
-      "firestoreId": "pat_3"
-    },
-    {
-      "gender": "Female",
-      "allergies": [
-        "Codeine"
-      ],
-      "dob": "1974-03-19",
-      "age": 52,
-      "phoneNumber": "+91 96543 21098",
-      "registeredAt": "2026-03-20T10:00:00.000Z",
-      "patientId": "PAT-1095",
-      "address": "B-12 Vasant Kunj, New Delhi",
-      "id": "pat_4",
-      "fullName": "Sunita Verma",
-      "emergencyContact": "Rohan Verma (Son) - +91 96543 21099",
-      "relevantMedicalHistory": "Hypothyroidism (Eltroxin 50mcg daily), hyperlipidemia.",
-      "email": "sunita.v@example.com",
-      "firestoreId": "pat_4"
-    }
-  ],
-  "doctors": [
-    {
-      "availableDays": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-      ],
-      "phone": "+91 99887 76655",
-      "status": "Available",
-      "roomNumber": "Room 101",
-      "avatar": "👨‍⚕️",
-      "timeSlots": [
-        "09:00 AM",
-        "10:00 AM",
-        "11:00 AM",
-        "12:00 PM",
-        "03:00 PM",
-        "04:00 PM",
-        "05:00 PM"
-      ],
-      "consultationFee": 800,
-      "fullName": "Dr. Rajesh Sharma",
-      "specialization": "Internal Medicine & Cardiology",
-      "id": "doc_1",
-      "experienceYears": 16,
-      "doctorId": "DOC-101",
-      "email": "dr.sharma@mediflow.ai",
-      "degree": "MBBS, MD (Medicine)",
-      "firestoreId": "doc_1"
-    },
-    {
-      "experienceYears": 12,
-      "phone": "+91 99112 23344",
-      "roomNumber": "Room 102",
-      "fullName": "Dr. Sarah Mitchell",
-      "status": "In Consultation",
-      "id": "doc_2",
-      "doctorId": "DOC-102",
-      "specialization": "General Practice & Internal Medicine",
+      "id": "usr_1793433917501",
+      "role": "doctor",
       "avatar": "👩‍⚕️",
-      "timeSlots": [
-        "10:00 AM",
-        "11:00 AM",
-        "01:00 PM",
-        "02:00 PM",
-        "04:00 PM",
-        "05:30 PM"
-      ],
-      "degree": "MBBS, MD, FRCP",
-      "availableDays": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday"
-      ],
-      "consultationFee": 750,
-      "email": "dr.mitchell@mediflow.ai",
-      "firestoreId": "doc_2"
+      "createdAt": "2026-10-31T08:05:17.501Z",
+      "doctorId": "DOC-489",
+      "email": "shayaniqubal87@gmail.com",
+      "displayName": "shayaniqubal87",
+      "specialty": "General Practice & Internal Medicine",
+      "firestoreId": "usr_1793433917501"
     },
     {
-      "consultationFee": 900,
-      "email": "dr.ananya@mediflow.ai",
-      "specialization": "Orthopedics & Joint Specialist",
-      "degree": "MBBS, MS (Ortho)",
-      "id": "doc_3",
+      "role": "doctor",
+      "email": "testdoctor@clinic.com",
+      "doctorId": "DOC-775",
       "avatar": "👩‍⚕️",
-      "fullName": "Dr. Ananya Roy",
-      "roomNumber": "Room 103",
-      "availableDays": [
-        "Tuesday",
-        "Thursday",
-        "Saturday"
-      ],
-      "status": "Available",
-      "experienceYears": 14,
-      "timeSlots": [
-        "11:00 AM",
-        "12:30 PM",
-        "03:30 PM",
-        "05:00 PM"
-      ],
-      "doctorId": "DOC-103",
-      "phone": "+91 99554 43322",
-      "firestoreId": "doc_3"
+      "createdAt": "2026-10-31T07:53:24.880Z",
+      "displayName": "Dr. Emily Watson, MD",
+      "id": "uvr1UQWr2MWK7MvqKwYuxzrBAy82",
+      "specialty": "General Practice & Internal Medicine",
+      "firestoreId": "uvr1UQWr2MWK7MvqKwYuxzrBAy82"
     }
   ],
-  "appointments": [
+  "patients": [],
+  "doctors": [],
+  "appointments": [],
+  "consultations": [],
+  "medical_reports": [],
+  "voice_sessions": [],
+  "clinics": [
     {
-      "id": "apt_1",
-      "appointmentDate": "2026-10-31",
-      "bookedVia": "Voice Receptionist",
-      "patientId": "PAT-1092",
-      "reasonForVisit": "High fever 101F, dry cough for 3 days",
-      "createdAt": "2026-10-31T04:30:00.000Z",
-      "doctorName": "Dr. Sarah Mitchell",
-      "appointmentTime": "10:00 AM",
-      "doctorId": "DOC-102",
-      "appointmentId": "APT-801",
-      "status": "In Consultation",
-      "tokenNumber": "A34",
-      "patientName": "Rahul Sharma",
-      "firestoreId": "apt_1"
+      "activeDoctorsCount": 3,
+      "phone": "+91 (11) 4567-8900",
+      "plan": "Enterprise Healthcare SaaS",
+      "clinicId": "clinic_main_01",
+      "location": "Medical Tower, Suite 400, Outer Ring Road, New Delhi",
+      "name": "MediFlow Central Clinic",
+      "firestoreId": "doc_1793428840587"
     },
     {
-      "reasonForVisit": "Voice Scheduled Consultation",
-      "appointmentTime": "11:00 AM",
-      "patientId": "PAT-1092",
-      "bookedVia": "Voice Receptionist",
-      "doctorId": "DOC-101",
-      "id": "apt_1793425276241",
-      "appointmentDate": "tomorrow",
-      "doctorName": "Dr. Rajesh Sharma",
-      "patientName": "Rahul Sharma",
-      "appointmentId": "APT-809",
-      "status": "Confirmed",
-      "createdAt": "2026-10-31T05:41:16.241Z",
-      "tokenNumber": "A42",
-      "firestoreId": "apt_1793425276241"
-    },
-    {
-      "reasonForVisit": "General Wellness Checkup",
-      "id": "apt_1793428346955",
-      "doctorName": "Dr. Sarah Mitchell",
-      "appointmentId": "APT-810",
-      "status": "Confirmed",
-      "createdAt": "2026-10-31T06:32:26.955Z",
-      "appointmentDate": "2026-11-01",
-      "patientId": "PAT-1092",
-      "doctorId": "DOC-102",
-      "appointmentTime": "02:00 PM",
-      "patientName": "Rahul Sharma",
-      "tokenNumber": "A43",
-      "bookedVia": "Staff Portal",
-      "firestoreId": "apt_1793428346955"
-    },
-    {
-      "bookedVia": "Reception Desk",
-      "id": "apt_2",
-      "doctorName": "Dr. Ananya Roy",
-      "patientName": "Priya Patel",
-      "appointmentTime": "11:00 AM",
-      "appointmentId": "APT-802",
-      "doctorId": "DOC-103",
-      "patientId": "PAT-1093",
-      "reasonForVisit": "Bilateral knee pain and morning stiffness",
-      "tokenNumber": "A35",
-      "createdAt": "2026-10-31T04:45:00.000Z",
-      "status": "In Consultation",
-      "appointmentDate": "2026-10-31",
-      "firestoreId": "apt_2"
-    },
-    {
-      "appointmentDate": "2026-10-31",
-      "status": "Pending",
-      "doctorId": "DOC-101",
-      "createdAt": "2026-10-31T05:00:00.000Z",
-      "doctorName": "Dr. Rajesh Sharma",
-      "id": "apt_3",
-      "patientId": "PAT-1094",
-      "appointmentTime": "03:00 PM",
-      "reasonForVisit": "Blood pressure evaluation and routine review",
-      "patientName": "Amit Kumar",
-      "bookedVia": "Voice Receptionist",
-      "tokenNumber": "A36",
-      "appointmentId": "APT-803",
-      "firestoreId": "apt_3"
-    },
-    {
-      "appointmentDate": "2026-11-01",
-      "bookedVia": "Patient Portal",
-      "doctorId": "DOC-101",
-      "id": "apt_4",
-      "patientId": "PAT-1095",
-      "doctorName": "Dr. Rajesh Sharma",
-      "reasonForVisit": "Thyroid report review and prescription refill",
-      "tokenNumber": "A37",
-      "appointmentId": "APT-804",
-      "patientName": "Sunita Verma",
-      "createdAt": "2026-10-30T10:00:00.000Z",
-      "appointmentTime": "11:00 AM",
-      "status": "Confirmed",
-      "firestoreId": "apt_4"
-    },
-    {
-      "id": "apt_1793429282843",
-      "appointmentId": "APT-811",
-      "patientId": "PAT-1092",
-      "patientName": "Rahul Sharma",
-      "doctorId": "DOC-101",
-      "doctorName": "Dr. Rajesh Sharma",
-      "appointmentDate": "2026-10-31",
-      "appointmentTime": "11:30 AM",
-      "reasonForVisit": "General Clinical Review",
-      "status": "Confirmed",
-      "bookedVia": "Staff Portal",
-      "tokenNumber": "A44",
-      "createdAt": "2026-10-31T06:48:02.843Z"
+      "name": "MediFlow South Specialty Center",
+      "activeDoctorsCount": 2,
+      "location": "C-8 Green Park, New Delhi",
+      "phone": "+91 (11) 4567-8901",
+      "plan": "Clinic Standard",
+      "clinicId": "clinic_south_02",
+      "firestoreId": "doc_1793428840687"
     }
   ],
-  "consultations": [
+  "patient_intakes": [
     {
-      "followUp": "Review after 3-5 days if fever persists > 100°F.",
-      "id": "con_1",
-      "doctorId": "DOC-102",
-      "vitals": {
-        "temperature": "101.2 °F",
-        "bloodPressure": "120/80 mmHg",
-        "spo2": "98%",
-        "pulseRate": "84 bpm"
-      },
-      "date": "2026-10-31",
-      "chiefComplaints": [
-        "101°F Fever for 3 days",
-        "Dry cough",
-        "Mild throat discomfort"
+      "intakeId": "intk_1793434155735",
+      "createdAt": "2026-10-31T08:09:15.735Z",
+      "reportedConcerns": [
+        "Voice Scheduled Consultation"
       ],
-      "diagnosis": [
-        "Acute Upper Respiratory Tract Infection (URTI) with Pyrexia"
-      ],
-      "patientName": "Rahul Sharma",
-      "doctorName": "Dr. Sarah Mitchell",
-      "patientId": "PAT-1092",
-      "treatmentPlan": [
-        {
-          "frequency": "TDS (1-1-1)",
-          "duration": "3 days",
-          "medicine": "Tab. Paracetamol",
-          "dosage": "650 mg",
-          "instructions": "After food for fever relief"
-        },
-        {
-          "medicine": "Tab. Azithromycin",
-          "instructions": "1 hour before lunch, once daily",
-          "dosage": "500 mg",
-          "frequency": "OD (1-0-0)",
-          "duration": "3 days"
-        }
-      ],
-      "generalAdvice": "Drink 2.5 - 3 Liters water daily, warm salt water gargle twice daily, strict bed rest.",
-      "appointmentId": "APT-801",
-      "firestoreId": "con_1"
-    },
-    {
-      "id": "con_1793429296254",
-      "consultationId": "CON-502",
-      "appointmentId": "",
-      "patientId": "PAT-1092",
-      "patientName": "Rohan Sharma",
-      "doctorId": "DOC-1",
-      "doctorName": "Dr. Sarah Patel",
-      "date": "2026-10-31",
-      "chiefComplaints": [
-        "Routine review"
-      ],
-      "vitals": {
-        "bp": "130/84",
-        "pulse": "78 bpm",
-        "temp": "98.4 F",
-        "spO2": "99%"
-      },
-      "clinicalObservations": "",
-      "doctorNotes": "",
-      "diagnosis": [
-        "Atypical Angina / Exertional Chest Discomfort under evaluation"
-      ],
-      "treatmentPlan": [],
-      "recommendedTests": [],
-      "followUpDate": "",
-      "status": "Completed",
-      "createdAt": "2026-10-31T06:48:16.255Z"
+      "preferredSpecialisation": "General Practice & Internal Medicine",
+      "patientName": "Voice Booking Patient",
+      "patientId": "PAT-1096",
+      "summaryStatus": "Pending Doctor Review",
+      "language": "English",
+      "appointmentRequested": true,
+      "reportedDuration": "Recent onset",
+      "existingPatient": true,
+      "firestoreId": "PAT-1096"
     }
   ],
-  "medical_reports": [
+  "whatsapp_messages": [
     {
-      "fileUrl": "/sample-reports/cbc_rahul_sharma.pdf",
-      "patientId": "PAT-1092",
-      "id": "rep_1",
-      "patientName": "Rahul Sharma",
-      "doctorReferred": "Dr. Rajesh Sharma",
-      "aiExplanation": "The elevated White Blood Cells (TLC 11,800) and elevated ESR indicate active immune response combating an acute infection.",
-      "reportDate": "2026-10-28",
-      "laboratoryRemarks": "Mild polymorphonuclear leukocytosis with elevated ESR suggestive of acute bacterial or reactive inflammatory process.",
-      "laboratory": "Apex Diagnostic Labs, New Delhi",
-      "testParameters": [
-        {
-          "parameter": "Hemoglobin (Hb)",
-          "value": "14.2",
-          "status": "Normal",
-          "unit": "g/dL",
-          "referenceRange": "13.0 - 17.0"
-        },
-        {
-          "unit": "/mcL",
-          "parameter": "Total Leukocyte Count (TLC)",
-          "value": "11,800",
-          "status": "High",
-          "referenceRange": "4,000 - 10,000"
-        },
-        {
-          "status": "Normal",
-          "value": "240,000",
-          "unit": "/mcL",
-          "parameter": "Platelet Count",
-          "referenceRange": "150,000 - 450,000"
-        },
-        {
-          "status": "High",
-          "unit": "%",
-          "parameter": "Neutrophils",
-          "value": "78",
-          "referenceRange": "40 - 70"
-        },
-        {
-          "value": "16",
-          "status": "Low",
-          "referenceRange": "20 - 40",
-          "unit": "%",
-          "parameter": "Lymphocytes"
-        },
-        {
-          "status": "High",
-          "unit": "mm/hr",
-          "value": "28",
-          "referenceRange": "0 - 15",
-          "parameter": "ESR (1st hour)"
-        }
-      ],
-      "reportType": "Complete Blood Count (CBC) with ESR",
-      "firestoreId": "rep_1"
+      "patientId": "PAT-1096",
+      "sentAt": "2026-10-31T08:09:15.741Z",
+      "content": "Hello Voice Booking Patient!\n\nYour appointment has been confirmed.\n\nClinic: MediFlow Central Clinic\nDoctor: Dr. shayaniqubal87\nDate: Tomorrow\nTime: 11:00 AM\nToken: A38\n\nThank you for choosing MediFlow.",
+      "direction": "Outbound",
+      "templateType": "APPOINTMENT_CONFIRMATION",
+      "messageId": "wa_1793434155741",
+      "patientName": "Voice Booking Patient",
+      "phoneNumber": "+91 99000 00000",
+      "status": "Delivered",
+      "firestoreId": "PAT-1096"
     },
     {
-      "fileUrl": "/sample-reports/tsh_sunita_verma.pdf",
-      "patientId": "PAT-1095",
-      "reportDate": "2026-10-25",
-      "patientName": "Sunita Verma",
-      "doctorReferred": "Dr. Rajesh Sharma",
-      "aiExplanation": "TSH is slightly above optimal reference limit, suggesting the current thyroid dosage may require minor titration by clinician.",
-      "laboratory": "Quest Diagnostics PathLab",
-      "testParameters": [
-        {
-          "parameter": "Free Triiodothyronine (FT3)",
-          "status": "Normal",
-          "value": "2.8",
-          "unit": "pg/mL",
-          "referenceRange": "2.0 - 4.4"
-        },
-        {
-          "parameter": "Free Thyroxine (FT4)",
-          "referenceRange": "0.8 - 1.8",
-          "status": "Normal",
-          "value": "1.1",
-          "unit": "ng/dL"
-        },
-        {
-          "parameter": "Thyroid Stimulating Hormone (TSH)",
-          "unit": "uIU/mL",
-          "value": "5.85",
-          "status": "High",
-          "referenceRange": "0.40 - 4.20"
-        }
-      ],
-      "laboratoryRemarks": "Mild elevated TSH with normal FT4 levels. Consistent with subclinical hypothyroidism; correlate with dosage of levothyroxine.",
-      "reportType": "Thyroid Profile (Free T3, Free T4, TSH)",
-      "id": "rep_2",
-      "firestoreId": "rep_2"
-    },
-    {
-      "id": "rep_1793429296261",
-      "reportId": "REP-703",
-      "patientId": "PAT-1092",
-      "patientName": "Rohan Sharma",
-      "reportType": "Cardiology - 12-Lead Rest ECG & Lipid Profile",
-      "reportCategory": "Cardiology",
-      "reportDate": "2026-10-31",
-      "laboratory": "Metropolis Diagnostics Lab",
-      "doctorReferred": "Dr. Sarah Mitchell, MD",
-      "laboratoryRemarks": "Uploaded by patient for clinical evaluation.",
-      "fileName": "cardiology.pdf",
-      "fileType": "application/pdf",
-      "fileData": "data:application/pdf;base64,JVBERi0xLjQKJcTl8uXr...",
-      "uploadedBy": "Patient",
-      "uploadedAt": "2026-10-31T06:48:16.261Z",
-      "status": "Uploaded",
-      "doctorApproved": false,
-      "testParameters": [
-        {
-          "parameter": "Cardiology Test Parameter",
-          "value": "Assessed",
-          "unit": "-",
-          "referenceRange": "Normal",
-          "status": "Normal"
-        }
-      ],
-      "aiExplanation": "Awaiting doctor clinical review and Gemma 4 diagnostic breakdown."
+      "templateType": "AUTO_BOT_REPLY",
+      "gatewayMode": "simulated",
+      "phoneNumber": "+120363410395196476",
+      "patientName": "WhatsApp Contact",
+      "status": "Simulated",
+      "content": "MediFlow AI is listening. Reply 1 to book, 2 for queue status, 3 for reports, 4 for staff, or 5 to stop alerts.",
+      "direction": "Outbound",
+      "messageId": "wa_1793431360183_928",
+      "sentAt": "2026-10-31T07:22:40.183Z",
+      "patientId": "WHATSAPP_CONTACT",
+      "firestoreId": "WHATSAPP_CONTACT"
     }
   ],
-  "voice_sessions": [
-    {
-      "id": "v_sess_1",
-      "startTime": "2026-10-31T05:00:00.000Z",
-      "patientName": "Rahul Sharma",
-      "detectedIntent": "book_appointment",
-      "status": "Completed",
-      "transcript": [
-        {
-          "sender": "patient",
-          "text": "Hello, I want to book an appointment."
-        },
-        {
-          "sender": "ai",
-          "text": "Welcome to MediFlow Clinic! I am your AI receptionist. May I know your name?"
-        },
-        {
-          "sender": "patient",
-          "text": "Rahul Sharma"
-        },
-        {
-          "sender": "ai",
-          "text": "Thank you Mr. Sharma. Which doctor would you like to consult?"
-        },
-        {
-          "sender": "patient",
-          "text": "Dr. Sharma tomorrow 11 AM."
-        },
-        {
-          "sender": "ai",
-          "text": "Dr. Rajesh Sharma is available tomorrow at 11:00 AM. Shall I confirm your booking?"
-        },
-        {
-          "sender": "patient",
-          "text": "Yes, please confirm."
-        },
-        {
-          "sender": "ai",
-          "text": "Your appointment APT-803 has been confirmed for tomorrow at 11:00 AM with Dr. Rajesh Sharma."
-        }
-      ],
-      "appointmentCreated": "APT-803"
-    }
-  ],
+  "notifications": [],
   "clinic_settings": {
     "clinicName": "MediFlow Intelligent Clinic",
     "tagline": "Smarter Clinics. Better Care. Powered by AI.",
@@ -573,295 +123,580 @@
       "Diagnostics Lab"
     ]
   },
+  "prescriptions": [],
   "audit_logs": [
     {
-      "action": "APPOINTMENT_CREATED",
-      "details": "Booked Token #A34 for patient Rahul Sharma with Dr. Sarah Mitchell",
       "actor": "AI Voice Receptionist",
       "timestamp": "2026-10-31T04:30:00.000Z",
       "id": "log_1",
+      "action": "APPOINTMENT_CREATED",
+      "details": "Booked Token #A34 for patient Rahul Sharma with Dr. Sarah Mitchell",
       "firestoreId": "log_1"
     },
     {
-      "action": "VOICE_APPOINTMENT_BOOKED",
       "timestamp": "2026-10-31T05:41:16.241Z",
-      "actor": "AI Voice Receptionist",
+      "action": "VOICE_APPOINTMENT_BOOKED",
       "id": "log_1793425276241",
       "details": "Booked APT-809 for Rahul Sharma with Dr. Rajesh Sharma",
+      "actor": "AI Voice Receptionist",
       "firestoreId": "log_1793425276241"
     },
     {
-      "action": "WHATSAPP_MESSAGE_DISPATCHED",
       "id": "log_1793426879803",
       "actor": "WhatsApp Automation",
-      "timestamp": "2026-10-31T06:07:59.803Z",
       "details": "Sent [APPOINTMENT_CONFIRMATION] to Rahul Sharma (+91 98765 43210)",
+      "action": "WHATSAPP_MESSAGE_DISPATCHED",
+      "timestamp": "2026-10-31T06:07:59.803Z",
       "firestoreId": "log_1793426879803"
     },
     {
       "action": "APPOINTMENT_UPDATED",
-      "actor": "Admin",
-      "id": "log_1793427301896",
-      "timestamp": "2026-10-31T06:15:01.896Z",
       "details": "Updated status/time for APT-802 to [In Consultation]",
+      "actor": "Admin",
+      "timestamp": "2026-10-31T06:15:01.896Z",
+      "id": "log_1793427301896",
       "firestoreId": "log_1793427301896"
     },
     {
-      "actor": "Dr. Arthur Sterling",
       "action": "USER_LOGIN",
-      "timestamp": "2026-10-31T06:30:35.213Z",
-      "id": "log_1793428235213",
       "details": "Logged in with role [admin]",
+      "id": "log_1793428235213",
+      "actor": "Dr. Arthur Sterling",
+      "timestamp": "2026-10-31T06:30:35.213Z",
       "firestoreId": "log_1793428235213"
     },
     {
-      "timestamp": "2026-10-31T06:32:26.957Z",
       "actor": "System",
-      "id": "log_1793428346957",
       "details": "Booked APT-810 (A43) for Rahul Sharma with Dr. Sarah Mitchell",
+      "id": "log_1793428346957",
       "action": "APPOINTMENT_BOOKED",
+      "timestamp": "2026-10-31T06:32:26.957Z",
       "firestoreId": "log_1793428346957"
     },
     {
-      "id": "log_2",
-      "action": "PATIENT_REGISTERED",
+      "action": "WHATSAPP_DISCONNECTED",
+      "timestamp": "2026-10-31T06:44:58.457Z",
+      "details": "Disconnected WhatsApp session",
+      "actor": "Admin",
+      "id": "log_1793429098457",
+      "firestoreId": "log_1793429098457"
+    },
+    {
+      "actor": "System",
+      "details": "Booked APT-811 (A44) for Rahul Sharma with Dr. Rajesh Sharma",
+      "id": "log_1793429282844",
+      "action": "APPOINTMENT_BOOKED",
+      "timestamp": "2026-10-31T06:48:02.844Z",
+      "firestoreId": "log_1793429282844"
+    },
+    {
+      "actor": "Dr. Sarah Patel",
+      "details": "Completed consultation for Rohan Sharma",
+      "timestamp": "2026-10-31T06:48:16.255Z",
+      "id": "log_1793429296255",
+      "action": "CONSULTATION_SAVED",
+      "firestoreId": "log_1793429296255"
+    },
+    {
+      "timestamp": "2026-10-31T06:48:16.258Z",
+      "details": "Created prescription RX-903 for Rohan Sharma",
+      "actor": "Dr. Sarah Patel",
+      "action": "PRESCRIPTION_CREATED",
+      "id": "log_1793429296258",
+      "firestoreId": "log_1793429296258"
+    },
+    {
+      "action": "REPORT_UPLOADED",
+      "timestamp": "2026-10-31T06:48:16.262Z",
+      "details": "Uploaded new Cardiology - 12-Lead Rest ECG & Lipid Profile (cardiology.pdf)",
+      "actor": "Patient",
+      "id": "log_1793429296262",
+      "firestoreId": "log_1793429296262"
+    },
+    {
+      "actor": "System",
+      "id": "log_1793429379105",
+      "timestamp": "2026-10-31T06:49:39.105Z",
+      "details": "Booked APT-812 (A45) for Rahul Sharma with Dr. Sarah Mitchell",
+      "action": "APPOINTMENT_BOOKED",
+      "firestoreId": "log_1793429379105"
+    },
+    {
+      "timestamp": "2026-10-31T06:49:45.384Z",
+      "details": "Completed consultation for Rohan Sharma",
+      "actor": "Dr. Sarah Mitchell",
+      "id": "log_1793429385384",
+      "action": "CONSULTATION_SAVED",
+      "firestoreId": "log_1793429385384"
+    },
+    {
+      "id": "log_1793429385388",
+      "details": "Created prescription RX-904 for Rohan Sharma",
+      "action": "PRESCRIPTION_CREATED",
+      "actor": "Dr. Sarah Mitchell",
+      "timestamp": "2026-10-31T06:49:45.388Z",
+      "firestoreId": "log_1793429385388"
+    },
+    {
+      "actor": "Patient",
+      "details": "Uploaded new Cardiology - 12-Lead Rest ECG & Lipid Profile (cardiology.pdf)",
+      "action": "REPORT_UPLOADED",
+      "id": "log_1793429385395",
+      "timestamp": "2026-10-31T06:49:45.395Z",
+      "firestoreId": "log_1793429385395"
+    },
+    {
+      "actor": "Dr. Sarah Mitchell",
+      "details": "Approved diagnostic report Cardiology - 12-Lead Rest ECG & Lipid Profile for Rahul Sharma",
+      "timestamp": "2026-10-31T06:49:45.397Z",
+      "action": "REPORT_APPROVED",
+      "id": "log_1793429385397",
+      "firestoreId": "log_1793429385397"
+    },
+    {
+      "action": "WHATSAPP_CONNECT_REQUEST",
+      "id": "log_1793429680922",
+      "details": "QR link request started from dashboard",
+      "timestamp": "2026-10-31T06:54:40.922Z",
+      "actor": "Admin",
+      "firestoreId": "log_1793429680922"
+    },
+    {
+      "actor": "WhatsApp Web Gateway",
+      "details": "Linked device: 919931758893",
+      "timestamp": "2026-10-31T06:55:12.389Z",
+      "id": "log_1793429712389",
+      "action": "WHATSAPP_CONNECTED",
+      "firestoreId": "log_1793429712389"
+    },
+    {
+      "action": "APPOINTMENT_RESCHEDULED",
+      "details": "Rescheduled APT-801 from 2026-10-31 10:00 AM to tomorrow 11:00 AM. Reason: Schedule Conflict Test",
+      "timestamp": "2026-10-31T07:00:42.552Z",
+      "actor": "Receptionist / Staff",
+      "id": "log_1793430042552",
+      "firestoreId": "log_1793430042552"
+    },
+    {
+      "action": "APPOINTMENT_RESCHEDULED",
+      "details": "Rescheduled APT-801 from tomorrow 11:00 AM to 2026-11-20 03:30 PM. Reason: Patient Request",
+      "id": "log_1793430042557",
+      "timestamp": "2026-10-31T07:00:42.557Z",
+      "actor": "Receptionist / Staff",
+      "firestoreId": "log_1793430042557"
+    },
+    {
+      "actor": "Admin",
+      "timestamp": "2026-10-31T07:03:32.767Z",
+      "id": "log_1793430212767",
+      "details": "QR link request started from dashboard",
+      "action": "WHATSAPP_CONNECT_REQUEST",
+      "firestoreId": "log_1793430212767"
+    },
+    {
+      "timestamp": "2026-10-31T07:03:33.559Z",
+      "action": "WHATSAPP_CONNECTED",
+      "id": "log_1793430213559",
+      "actor": "WhatsApp Web Gateway",
+      "details": "Linked device: 919931758893",
+      "firestoreId": "log_1793430213559"
+    },
+    {
+      "details": "Linked device: 919931758893",
+      "action": "WHATSAPP_CONNECTED",
+      "timestamp": "2026-10-31T07:03:40.337Z",
+      "id": "log_1793430220337",
+      "actor": "WhatsApp Web Gateway",
+      "firestoreId": "log_1793430220337"
+    },
+    {
+      "timestamp": "2026-10-31T07:03:56.876Z",
+      "id": "log_1793430236876",
+      "action": "WHATSAPP_MESSAGE_SENT",
+      "details": "[APPOINTMENT_CONFIRMATION] → +917717593866 (mode: real)",
+      "actor": "WhatsApp Automation",
+      "firestoreId": "log_1793430236876"
+    },
+    {
+      "id": "log_1793430301880",
+      "details": "Replied to Patient (+46321390072054)",
+      "actor": "WhatsApp Automation Bot",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "timestamp": "2026-10-31T07:05:01.880Z",
+      "firestoreId": "log_1793430301880"
+    },
+    {
+      "details": "Replied to Patient (+262998144893145)",
+      "id": "log_1793430301882",
+      "actor": "WhatsApp Automation Bot",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "timestamp": "2026-10-31T07:05:01.882Z",
+      "firestoreId": "log_1793430301882"
+    },
+    {
+      "timestamp": "2026-10-31T07:05:01.883Z",
+      "actor": "WhatsApp Automation Bot",
+      "id": "log_1793430301883",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "details": "Replied to Patient (+98162165473284)",
+      "firestoreId": "log_1793430301883"
+    },
+    {
+      "id": "log_1793430912674",
+      "action": "USER_LOGIN",
+      "details": "Logged in with role [doctor]",
+      "actor": "doctor",
+      "timestamp": "2026-10-31T07:15:12.674Z",
+      "firestoreId": "log_1793430912674"
+    },
+    {
+      "action": "USER_LOGIN",
+      "timestamp": "2026-10-31T07:15:13.046Z",
+      "details": "Logged in with role [patient]",
+      "id": "log_1793430913046",
+      "actor": "patient",
+      "firestoreId": "log_1793430913046"
+    },
+    {
+      "actor": "Dr. Arthur Sterling",
+      "id": "log_1793430913409",
+      "action": "USER_LOGIN",
+      "details": "Logged in with role [admin]",
+      "timestamp": "2026-10-31T07:15:13.409Z",
+      "firestoreId": "log_1793430913409"
+    },
+    {
+      "actor": "Alex Carter",
+      "action": "USER_LOGIN",
+      "id": "log_1793430913765",
+      "timestamp": "2026-10-31T07:15:13.765Z",
+      "details": "Logged in with role [receptionist]",
+      "firestoreId": "log_1793430913765"
+    },
+    {
+      "details": "Logged in with role [doctor]",
+      "actor": "doctor",
+      "id": "log_1793430997672",
+      "action": "USER_LOGIN",
+      "timestamp": "2026-10-31T07:16:37.672Z",
+      "firestoreId": "log_1793430997672"
+    },
+    {
+      "timestamp": "2026-10-31T07:16:38.059Z",
+      "action": "USER_LOGIN",
+      "actor": "patient",
+      "details": "Logged in with role [patient]",
+      "id": "log_1793430998059",
+      "firestoreId": "log_1793430998059"
+    },
+    {
+      "actor": "Dr. Arthur Sterling",
+      "id": "log_1793430998467",
+      "timestamp": "2026-10-31T07:16:38.467Z",
+      "action": "USER_LOGIN",
+      "details": "Logged in with role [admin]",
+      "firestoreId": "log_1793430998467"
+    },
+    {
+      "actor": "Alex Carter",
+      "details": "Logged in with role [receptionist]",
+      "id": "log_1793430998877",
+      "action": "USER_LOGIN",
+      "timestamp": "2026-10-31T07:16:38.877Z",
+      "firestoreId": "log_1793430998877"
+    },
+    {
+      "id": "log_1793431114185",
+      "details": "Logged in with role [doctor]",
+      "actor": "Dr. Sarah Mitchell, MD",
+      "timestamp": "2026-10-31T07:18:34.185Z",
+      "action": "USER_LOGIN",
+      "firestoreId": "log_1793431114185"
+    },
+    {
+      "details": "Logged in with role [patient]",
+      "action": "USER_LOGIN",
+      "id": "log_1793431115320",
+      "actor": "Rahul Sharma",
+      "timestamp": "2026-10-31T07:18:35.320Z",
+      "firestoreId": "log_1793431115320"
+    },
+    {
+      "id": "log_1793431115684",
+      "actor": "Dr. Arthur Sterling",
+      "action": "USER_LOGIN",
+      "timestamp": "2026-10-31T07:18:35.684Z",
+      "details": "Logged in with role [admin]",
+      "firestoreId": "log_1793431115684"
+    },
+    {
+      "timestamp": "2026-10-31T07:18:36.012Z",
+      "actor": "Alex Carter",
+      "id": "log_1793431116012",
+      "action": "USER_LOGIN",
+      "details": "Logged in with role [receptionist]",
+      "firestoreId": "log_1793431116012"
+    },
+    {
+      "details": "Logged in with role [receptionist]",
+      "action": "USER_LOGIN",
+      "id": "log_1793431253849",
+      "actor": "Alex Carter",
+      "timestamp": "2026-10-31T07:20:53.849Z",
+      "firestoreId": "log_1793431253849"
+    },
+    {
+      "actor": "Admin",
+      "timestamp": "2026-10-31T07:21:08.873Z",
+      "details": "QR link request started from dashboard",
+      "id": "log_1793431268873",
+      "action": "WHATSAPP_CONNECT_REQUEST",
+      "firestoreId": "log_1793431268873"
+    },
+    {
+      "actor": "WhatsApp Web Gateway",
+      "timestamp": "2026-10-31T07:21:09.716Z",
+      "details": "Linked device: 919931758893",
+      "id": "log_1793431269716",
+      "action": "WHATSAPP_CONNECTED",
+      "firestoreId": "log_1793431269716"
+    },
+    {
+      "details": "Replied to Patient (+120363410395196476)",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "timestamp": "2026-10-31T07:21:10.360Z",
+      "id": "log_1793431270360",
+      "actor": "WhatsApp Automation Bot",
+      "firestoreId": "log_1793431270360"
+    },
+    {
+      "timestamp": "2026-10-31T07:21:14.075Z",
+      "actor": "WhatsApp Automation Bot",
+      "id": "log_1793431274075",
+      "details": "Replied to Patient (+120363410395196476)",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "firestoreId": "log_1793431274075"
+    },
+    {
+      "actor": "WhatsApp Automation Bot",
+      "id": "log_1793431329691",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "details": "Replied to Patient (+120363410395196476)",
+      "timestamp": "2026-10-31T07:22:09.691Z",
+      "firestoreId": "log_1793431329691"
+    },
+    {
+      "timestamp": "2026-10-31T07:22:14.530Z",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "id": "log_1793431334530",
+      "details": "Replied to Patient (+120363410395196476)",
+      "actor": "WhatsApp Automation Bot",
+      "firestoreId": "log_1793431334530"
+    },
+    {
+      "id": "log_1793431338703",
+      "details": "Replied to Patient (+120363410395196476)",
+      "actor": "WhatsApp Automation Bot",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "timestamp": "2026-10-31T07:22:18.703Z",
+      "firestoreId": "log_1793431338703"
+    },
+    {
+      "actor": "WhatsApp Automation Bot",
+      "timestamp": "2026-10-31T07:22:28.983Z",
+      "id": "log_1793431348983",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "details": "Replied to Patient (+120363410395196476)",
+      "firestoreId": "log_1793431348983"
+    },
+    {
+      "timestamp": "2026-10-31T07:22:40.184Z",
+      "action": "WHATSAPP_AUTO_BOT_REPLY",
+      "details": "Replied to Patient (+120363410395196476)",
+      "id": "log_1793431360184",
+      "actor": "WhatsApp Automation Bot",
+      "firestoreId": "log_1793431360184"
+    },
+    {
+      "actor": "Admin",
+      "timestamp": "2026-10-31T07:23:38.496Z",
+      "id": "log_1793431418496",
+      "action": "APPOINTMENT_UPDATED",
+      "details": "Updated status/time for APT-803 to [Confirmed]",
+      "firestoreId": "log_1793431418496"
+    },
+    {
+      "details": "Updated status/time for APT-803 to [In Consultation]",
+      "id": "log_1793431419744",
+      "action": "APPOINTMENT_UPDATED",
+      "timestamp": "2026-10-31T07:23:39.744Z",
+      "actor": "Admin",
+      "firestoreId": "log_1793431419744"
+    },
+    {
+      "actor": "Admin",
+      "details": "Updated status/time for APT-803 to [Completed]",
+      "timestamp": "2026-10-31T07:23:40.770Z",
+      "id": "log_1793431420770",
+      "action": "APPOINTMENT_UPDATED",
+      "firestoreId": "log_1793431420770"
+    },
+    {
+      "action": "PATIENT_CHECKED_IN",
+      "id": "log_1793431770209",
+      "actor": "Alex Carter (Receptionist)",
+      "timestamp": "2026-10-31T07:29:30.209Z",
+      "details": "Checked in Amit Kumar (Token #A36) for Dr. Rajesh Sharma",
+      "firestoreId": "log_1793431770209"
+    },
+    {
+      "actor": "Alex Carter",
+      "action": "TOKEN_CALLED",
+      "id": "log_1793431770214",
+      "details": "Called Token #A36 (Amit Kumar) to Room 102",
+      "timestamp": "2026-10-31T07:29:30.214Z",
+      "firestoreId": "log_1793431770214"
+    },
+    {
+      "details": "Recalled chime for Token #A36 (Amit Kumar)",
+      "action": "TOKEN_RECALLED",
+      "actor": "Alex Carter",
+      "id": "log_1793431770217",
+      "timestamp": "2026-10-31T07:29:30.217Z",
+      "firestoreId": "log_1793431770217"
+    },
+    {
+      "timestamp": "2026-10-31T07:29:30.220Z",
+      "actor": "Alex Carter",
+      "action": "TOKEN_TRANSFERRED",
+      "id": "log_1793431770220",
+      "details": "Transferred Token #A36 from Dr. Rajesh Sharma to Dr. Rajesh Sharma",
+      "firestoreId": "log_1793431770220"
+    },
+    {
+      "action": "INVOICE_GENERATED",
+      "details": "Created INV-2026-103 for Sunita Verma (₹1312.5) [Pending]",
+      "timestamp": "2026-10-31T07:29:30.223Z",
+      "id": "log_1793431770223",
+      "actor": "Staff",
+      "firestoreId": "log_1793431770223"
+    },
+    {
+      "id": "log_1793431770227",
+      "timestamp": "2026-10-31T07:29:30.227Z",
+      "actor": "Alex Carter (Front Desk)",
+      "action": "PAYMENT_CONFIRMED",
+      "details": "Confirmed ₹1312.5 for INV-2026-103 (Sunita Verma)",
+      "firestoreId": "log_1793431770227"
+    },
+    {
+      "actor": "User / Voice Agent",
+      "id": "log_1793432899366",
+      "timestamp": "2026-10-31T07:48:19.366Z",
+      "action": "APPOINTMENT_CANCELLED",
+      "details": "Cancelled appointment APT-813",
+      "firestoreId": "log_1793432899366"
+    },
+    {
+      "details": "Registered new [doctor] account",
+      "action": "USER_REGISTERED",
+      "timestamp": "2026-10-31T07:53:24.882Z",
+      "id": "log_1793433204882",
+      "actor": "Dr. Emily Watson, MD",
+      "firestoreId": "log_1793433204882"
+    },
+    {
+      "timestamp": "2026-10-31T07:53:33.221Z",
+      "actor": "demo",
+      "details": "Logged in with role [receptionist]",
+      "action": "USER_LOGIN",
+      "id": "log_1793433213221",
+      "firestoreId": "log_1793433213221"
+    },
+    {
+      "action": "USER_LOGIN",
+      "details": "Logged in with role [receptionist]",
+      "timestamp": "2026-10-31T07:56:23.509Z",
+      "actor": "demo",
+      "id": "log_1793433383509",
+      "firestoreId": "log_1793433383509"
+    },
+    {
+      "details": "Logged in with role [doctor]",
+      "action": "USER_LOGIN",
+      "actor": "shayaniqubal87",
+      "id": "log_1793433917504",
+      "timestamp": "2026-10-31T08:05:17.504Z",
+      "firestoreId": "log_1793433917504"
+    },
+    {
+      "timestamp": "2026-10-31T08:05:35.075Z",
+      "actor": "demo",
+      "id": "log_1793433935075",
+      "action": "USER_LOGIN",
+      "details": "Logged in with role [receptionist]",
+      "firestoreId": "log_1793433935075"
+    },
+    {
+      "actor": "AI Voice Receptionist",
+      "id": "log_1793434155733",
+      "action": "VOICE_APPOINTMENT_BOOKED",
+      "timestamp": "2026-10-31T08:09:15.733Z",
+      "details": "Booked APT-805 for Voice Booking Patient with Dr. shayaniqubal87",
+      "firestoreId": "log_1793434155733"
+    },
+    {
       "details": "Registered new patient Priya Patel (PAT-1093)",
+      "action": "PATIENT_REGISTERED",
+      "id": "log_2",
       "actor": "Receptionist (Alex Carter)",
       "timestamp": "2026-10-31T04:45:00.000Z",
       "firestoreId": "log_2"
     },
     {
-      "action": "VOICE_SESSION_COMPLETED",
-      "details": "Voice booking session #v_sess_1 successfully verified and recorded",
       "actor": "Gemma 4 Voice Engine",
       "timestamp": "2026-10-31T05:00:00.000Z",
       "id": "log_3",
+      "details": "Voice booking session #v_sess_1 successfully verified and recorded",
+      "action": "VOICE_SESSION_COMPLETED",
       "firestoreId": "log_3"
     },
     {
-      "id": "log_1793429098457",
-      "timestamp": "2026-10-31T06:44:58.457Z",
-      "action": "WHATSAPP_DISCONNECTED",
-      "actor": "Admin",
-      "details": "Disconnected WhatsApp session"
-    },
-    {
-      "id": "log_1793429282844",
-      "timestamp": "2026-10-31T06:48:02.844Z",
-      "action": "APPOINTMENT_BOOKED",
-      "actor": "System",
-      "details": "Booked APT-811 (A44) for Rahul Sharma with Dr. Rajesh Sharma"
-    },
-    {
-      "id": "log_1793429296255",
-      "timestamp": "2026-10-31T06:48:16.255Z",
-      "action": "CONSULTATION_SAVED",
-      "actor": "Dr. Sarah Patel",
-      "details": "Completed consultation for Rohan Sharma"
-    },
-    {
-      "id": "log_1793429296258",
-      "timestamp": "2026-10-31T06:48:16.258Z",
-      "action": "PRESCRIPTION_CREATED",
-      "actor": "Dr. Sarah Patel",
-      "details": "Created prescription RX-903 for Rohan Sharma"
-    },
-    {
-      "id": "log_1793429296262",
-      "timestamp": "2026-10-31T06:48:16.262Z",
-      "action": "REPORT_UPLOADED",
-      "actor": "Patient",
-      "details": "Uploaded new Cardiology - 12-Lead Rest ECG & Lipid Profile (cardiology.pdf)"
+      "id": "log_1793434893703",
+      "timestamp": "2026-10-31T08:21:33.703Z",
+      "action": "AMBIENT_SCRIBE_ANALYSIS",
+      "actor": "Dr. Sarah Mitchell, MD",
+      "details": "Ambient AI analyzed doctor-patient dialogue for Rahul Sharma (Acute Upper Respiratory Tract Infection (URTI))"
     }
   ],
-  "whatsapp_messages": [
+  "invoices": [],
+  "payments": [
     {
-      "templateType": "APPOINTMENT_CONFIRMATION",
-      "messageId": "wa_1793426879803",
+      "paymentId": "PAY-8801",
       "patientId": "PAT-1092",
-      "patientName": "Rahul Sharma",
-      "direction": "Outbound",
-      "sentAt": "2026-10-31T06:07:59.803Z",
-      "status": "Delivered",
-      "content": "Hello Rahul Sharma!\n\nYour appointment has been confirmed.\n\nClinic: MediFlow Central Clinic\nDoctor: Dr. Sarah Mitchell\nDate: Tomorrow\nTime: 11:00 AM\nToken: #A38\n\nThank you for choosing MediFlow.",
-      "phoneNumber": "+91 98765 43210",
-      "firestoreId": "PAT-1092"
+      "status": "Confirmed",
+      "timestamp": "2026-10-31T09:30:00.000Z",
+      "transactionReference": "UPI-REF-9921448",
+      "paymentMethod": "UPI",
+      "invoiceId": "INV-2026-101",
+      "amount": 850.5,
+      "id": "pay_1",
+      "recordedBy": "Alex Carter (Reception Desk)",
+      "firestoreId": "pay_1"
     },
     {
-      "messageId": "wa_1793429296258",
-      "patientId": "PAT-1092",
-      "patientName": "Rohan Sharma",
-      "phoneNumber": "+91 98765 43210",
-      "templateType": "PRESCRIPTION_READY",
-      "content": "Hello Rohan Sharma,\n\nYour prescription from Dr. Sarah Patel is now ready in your MediFlow Patient Health Portal.\n\nPrescription ID: RX-903\nDiagnosis: Atypical Angina / Exertional Chest Discomfort\n\nPlease check your portal to view or download the PDF copy.",
-      "status": "Delivered",
-      "sentAt": "2026-10-31T06:48:16.258Z",
-      "direction": "Outbound"
-    }
-  ],
-  "clinics": [
-    {
-      "clinicId": "clinic_main_01",
-      "name": "MediFlow Central Clinic",
-      "location": "Medical Tower, Suite 400, Outer Ring Road, New Delhi",
-      "phone": "+91 (11) 4567-8900",
-      "activeDoctorsCount": 3,
-      "plan": "Enterprise Healthcare SaaS"
-    },
-    {
-      "clinicId": "clinic_south_02",
-      "name": "MediFlow South Specialty Center",
-      "location": "C-8 Green Park, New Delhi",
-      "phone": "+91 (11) 4567-8901",
-      "activeDoctorsCount": 2,
-      "plan": "Clinic Standard"
-    }
-  ],
-  "patient_intakes": [
-    {
-      "intakeId": "intk_1",
-      "patientId": "PAT-1092",
-      "patientName": "Rahul Sharma",
-      "reportedConcerns": [
-        "Headache",
-        "Fever of 101F for 3 days",
-        "Dry cough"
-      ],
-      "reportedDuration": "3 days",
-      "existingPatient": true,
-      "appointmentRequested": true,
-      "preferredSpecialisation": "General Physician / Internal Medicine",
-      "language": "English",
-      "summaryStatus": "Pending Doctor Review",
-      "createdAt": "2026-10-31T05:05:00.000Z"
-    }
-  ],
-  "notifications": [
-    {
-      "notificationId": "notif_1",
-      "type": "REMINDER_24H",
-      "target": "Rahul Sharma",
-      "channel": "WhatsApp",
-      "scheduledTime": "2026-10-30T10:00:00.000Z",
-      "status": "Executed",
-      "appointmentId": "APT-801"
-    },
-    {
-      "notificationId": "notif_2",
-      "type": "FOLLOW_UP_SCHEDULE",
-      "target": "Rahul Sharma",
-      "channel": "WhatsApp",
-      "scheduledTime": "2026-11-05T09:00:00.000Z",
-      "status": "Pending",
-      "appointmentId": "APT-801",
-      "details": "Follow-up for URTI & Pyrexia review"
-    },
-    {
-      "notificationId": "notif_1793429296262",
-      "type": "NEW_REPORT_UPLOADED",
-      "target": "Dr. Sarah Mitchell",
-      "patientName": "Rohan Sharma",
-      "reportName": "Cardiology - 12-Lead Rest ECG & Lipid Profile",
-      "createdAt": "2026-10-31T06:48:16.262Z",
-      "status": "Unread"
-    }
-  ],
-  "prescriptions": [
-    {
-      "id": "rx_1",
-      "prescriptionId": "RX-901",
-      "patientId": "PAT-1092",
-      "patientName": "Rahul Sharma",
-      "doctorId": "DOC-102",
-      "doctorName": "Dr. Sarah Mitchell, MD",
-      "consultationId": "con_1",
-      "consultationDate": "2026-10-31",
-      "diagnosis": "Acute Upper Respiratory Tract Infection (URTI) with Pyrexia",
-      "medicines": [
-        {
-          "medicineName": "Tab. Paracetamol",
-          "strength": "650 mg",
-          "dosage": "1 tablet",
-          "frequency": "TDS (1-1-1)",
-          "duration": "3 days",
-          "instructions": "After food for fever relief"
-        },
-        {
-          "medicineName": "Tab. Azithromycin",
-          "strength": "500 mg",
-          "dosage": "1 tablet",
-          "frequency": "OD (1-0-0)",
-          "duration": "3 days",
-          "instructions": "1 hour before lunch, once daily"
-        }
-      ],
-      "recommendedTests": [
-        "Complete Blood Count (CBC) with ESR if fever > 100°F"
-      ],
-      "followUpDate": "2026-11-04",
-      "additionalNotes": "Drink 2.5 - 3 Liters water daily, warm salt water gargle twice daily, strict bed rest.",
-      "status": "Approved",
-      "approvedByDoctor": true,
-      "publishedToPortal": true,
-      "createdAt": "2026-10-31T05:00:00.000Z"
-    },
-    {
-      "id": "rx_2",
-      "prescriptionId": "RX-902",
+      "paymentMethod": "UPI",
+      "recordedBy": "Alex Carter (Front Desk)",
       "patientId": "PAT-1095",
-      "patientName": "Sunita Verma",
-      "doctorId": "DOC-101",
-      "doctorName": "Dr. Rajesh Sharma, MD",
-      "consultationId": "con_2",
-      "consultationDate": "2026-10-25",
-      "diagnosis": "Subclinical Hypothyroidism & Borderline Glycemia",
-      "medicines": [
-        {
-          "medicineName": "Tab. Thyronorm (Levothyroxine)",
-          "strength": "50 mcg",
-          "dosage": "1 tablet",
-          "frequency": "OD (1-0-0)",
-          "duration": "30 days",
-          "instructions": "Empty stomach in the morning with water"
-        },
-        {
-          "medicineName": "Tab. Metformin",
-          "strength": "500 mg",
-          "dosage": "1 tablet",
-          "frequency": "BD (1-0-1)",
-          "duration": "30 days",
-          "instructions": "Immediately after breakfast and dinner"
-        }
-      ],
-      "recommendedTests": [
-        "Repeat Serum TSH after 6 weeks",
-        "HbA1c & Fasting Blood Sugar"
-      ],
-      "followUpDate": "2026-11-25",
-      "additionalNotes": "Maintain low-carb diet, 30 minutes light brisk walk daily, avoid soya within 4 hours of thyroid pill.",
-      "status": "Approved",
-      "approvedByDoctor": true,
-      "publishedToPortal": true,
-      "createdAt": "2026-10-25T11:00:00.000Z"
-    },
-    {
-      "id": "rx_1793429296257",
-      "prescriptionId": "RX-903",
-      "patientId": "PAT-1092",
-      "patientName": "Rohan Sharma",
-      "doctorId": "DOC-1",
-      "doctorName": "Dr. Sarah Patel",
-      "consultationId": "con_1793429296257",
-      "consultationDate": "2026-10-31",
-      "diagnosis": "Atypical Angina / Exertional Chest Discomfort",
-      "medicines": [],
-      "recommendedTests": [],
-      "followUpDate": "2026-11-15",
-      "additionalNotes": "",
-      "status": "Approved",
-      "approvedByDoctor": true,
-      "publishedToPortal": true,
-      "createdAt": "2026-10-31T06:48:16.257Z"
+      "amount": 1312.5,
+      "transactionReference": "UPI-TXN-98421044",
+      "timestamp": "2026-10-31T07:29:30.226Z",
+      "paymentId": "PAY-8802",
+      "invoiceId": "INV-2026-103",
+      "status": "Confirmed",
+      "id": "pay_1793431770226",
+      "firestoreId": "pay_1793431770226"
     }
-  ]
+  ],
+  "queue_tokens": []
 }

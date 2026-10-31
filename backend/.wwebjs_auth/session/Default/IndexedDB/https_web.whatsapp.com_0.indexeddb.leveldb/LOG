@@ -1,0 +1,48 @@
+2026/10/31-12:51:03.913 8760 Reusing MANIFEST C:\clinic mangement system\backend\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/10/31-12:51:03.914 8760 Recovering log #400
+2026/10/31-12:51:03.952 8760 Reusing old log C:\clinic mangement system\backend\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000400.log 
+2026/10/31-12:51:10.335 8760 Level-0 table #421: started
+2026/10/31-12:51:10.355 8760 Level-0 table #421: 1018246 bytes OK
+2026/10/31-12:51:10.357 8760 Delete type=0 #400
+2026/10/31-12:51:10.406 55f8 Compacting 1@0 + 0@1 files
+2026/10/31-12:51:10.428 55f8 Generated table #422@0: 28295 keys, 473928 bytes
+2026/10/31-12:51:10.438 55f8 Generated table #423@0: 9154 keys, 169630 bytes
+2026/10/31-12:51:10.438 55f8 Compacted 1@0 + 0@1 files => 643558 bytes
+2026/10/31-12:51:10.438 55f8 compacted to: files[ 0 2 14 0 0 0 0 ]
+2026/10/31-12:51:10.475 8b98 Compacting 1@1 + 10@2 files
+2026/10/31-12:51:10.554 8b98 Generated table #424@1: 67021 keys, 2227780 bytes
+2026/10/31-12:51:10.580 8b98 Generated table #425@1: 1330 keys, 2144296 bytes
+2026/10/31-12:51:10.608 8b98 Generated table #426@1: 2021 keys, 2146611 bytes
+2026/10/31-12:51:10.632 8b98 Generated table #427@1: 1891 keys, 2141487 bytes
+2026/10/31-12:51:10.655 8b98 Generated table #428@1: 1976 keys, 2143584 bytes
+2026/10/31-12:51:10.683 8b98 Generated table #429@1: 11443 keys, 2161185 bytes
+2026/10/31-12:51:10.735 8b98 Generated table #430@1: 28052 keys, 2263365 bytes
+2026/10/31-12:51:10.775 8b98 Generated table #431@1: 13456 keys, 2185487 bytes
+2026/10/31-12:51:10.801 8b98 Generated table #432@1: 5620 keys, 2125877 bytes
+2026/10/31-12:51:10.855 8b98 Generated table #433@1: 105198 keys, 2257642 bytes
+2026/10/31-12:51:10.864 8b98 Generated table #434@1: 12114 keys, 261458 bytes
+2026/10/31-12:51:10.864 8b98 Compacted 1@1 + 10@2 files => 22058772 bytes
+2026/10/31-12:51:10.865 8b98 compacted to: files[ 0 1 15 0 0 0 0 ]
+2026/10/31-12:51:10.865 8b98 Delete type=2 #408
+2026/10/31-12:51:10.865 8b98 Delete type=2 #409
+2026/10/31-12:51:10.865 8b98 Delete type=2 #410
+2026/10/31-12:51:10.865 8b98 Delete type=2 #411
+2026/10/31-12:51:10.865 8b98 Delete type=2 #412
+2026/10/31-12:51:10.865 8b98 Delete type=2 #413
+2026/10/31-12:51:10.865 8b98 Delete type=2 #414
+2026/10/31-12:51:10.866 8b98 Delete type=2 #415
+2026/10/31-12:51:10.866 8b98 Delete type=2 #416
+2026/10/31-12:51:10.866 8b98 Delete type=2 #417
+2026/10/31-12:51:10.866 8b98 Delete type=2 #421
+2026/10/31-12:51:10.866 8b98 Delete type=2 #422
+2026/10/31-12:51:12.140 8760 Compacting 1@1 + 4@2 files
+2026/10/31-12:51:12.206 8760 Generated table #435@1: 104549 keys, 2256085 bytes
+2026/10/31-12:51:12.273 8760 Generated table #436@1: 104815 keys, 2255327 bytes
+2026/10/31-12:51:12.298 8760 Generated table #437@1: 37044 keys, 883708 bytes
+2026/10/31-12:51:12.298 8760 Compacted 1@1 + 4@2 files => 5395120 bytes
+2026/10/31-12:51:12.298 8760 compacted to: files[ 0 0 14 0 0 0 0 ]
+2026/10/31-12:51:12.298 8760 Delete type=2 #405
+2026/10/31-12:51:12.298 8760 Delete type=2 #406
+2026/10/31-12:51:12.298 8760 Delete type=2 #407
+2026/10/31-12:51:12.298 8760 Delete type=2 #418
+2026/10/31-12:51:12.298 8760 Delete type=2 #423

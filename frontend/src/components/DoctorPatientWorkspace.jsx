@@ -27,8 +27,13 @@ import {
 } from 'lucide-react';
 import { AIPatientSummaryModal } from './AIPatientSummaryModal';
 import { PrescriptionPrintModal } from './PrescriptionPrintModal';
+import { AmbientConsultationScribe } from './AmbientConsultationScribe';
+import { useAuth } from '../context/AuthContext';
 
 export const DoctorPatientWorkspace = ({ patientId, appointmentId, onBack, onConsultationSaved }) => {
+  const { currentUser } = useAuth();
+  const currentDoctorName = currentUser?.displayName || 'Physician';
+  const currentDoctorId = currentUser?.doctorId || 'DOC-ATTENDING';
   const [patientData, setPatientData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeRecordsTab, setActiveRecordsTab] = useState('reports'); // 'reports' | 'prescriptions' | 'consultations' | 'ai-summaries'
@@ -120,6 +125,36 @@ export const DoctorPatientWorkspace = ({ patientId, appointmentId, onBack, onCon
     setMedicines(prev => prev.map((m, i) => i === idx ? { ...m, [field]: val } : m));
   };
 
+  // Apply Ambient AI Consultation Scribe Extracted Details
+  const handleApplyAmbientDetails = (extracted) => {
+    if (!extracted) return;
+    if (extracted.chiefComplaints) setChiefComplaints(extracted.chiefComplaints);
+    if (extracted.symptomsDuration) setSymptomsDuration(extracted.symptomsDuration);
+    if (extracted.vitals) {
+      if (extracted.vitals.bloodPressure) setVitalsBP(extracted.vitals.bloodPressure);
+      if (extracted.vitals.temperature) setVitalsTemp(extracted.vitals.temperature);
+      if (extracted.vitals.pulseRate) setVitalsPulse(extracted.vitals.pulseRate);
+      if (extracted.vitals.spo2) setVitalsSpO2(extracted.vitals.spo2);
+    }
+    if (extracted.clinicalObservations) setClinicalObservations(extracted.clinicalObservations);
+    if (extracted.diagnosis) setDiagnosis(extracted.diagnosis);
+    if (extracted.summary) setDoctorNotes(extracted.summary);
+    if (extracted.recommendedTests) setRecommendedTests(extracted.recommendedTests);
+    if (extracted.followUpDate) setFollowUpDate(extracted.followUpDate);
+    if (extracted.medicines && Array.isArray(extracted.medicines) && extracted.medicines.length > 0) {
+      setMedicines(extracted.medicines.map(m => ({
+        medicineName: m.medicineName || '',
+        strength: m.strength || '',
+        dosage: m.dosage || '1 tablet',
+        frequency: m.frequency || 'TDS (1-1-1)',
+        duration: m.duration || '3 days',
+        instructions: m.instructions || 'After meals'
+      })));
+    }
+    setSaveSuccessMessage('✨ AI Extracted details & prescriptions populated into consultation form!');
+    setTimeout(() => setSaveSuccessMessage(''), 4500);
+  };
+
   // Trigger Gemma 4 AI Summary
   const handleGenerateAISummary = async () => {
     setIsAiSummaryOpen(true);
@@ -149,10 +184,10 @@ export const DoctorPatientWorkspace = ({ patientId, appointmentId, onBack, onCon
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           appointmentId: appointmentId || '',
-          patientId: patientData?.patient?.patientId || patientId || 'PAT-1092',
-          patientName: patientData?.patient?.fullName || 'Rahul Sharma',
-          doctorId: 'DOC-102',
-          doctorName: 'Dr. Sarah Mitchell, MD',
+          patientId: patientData?.patient?.patientId || patientId || '',
+          patientName: patientData?.patient?.fullName || 'Patient',
+          doctorId: currentDoctorId,
+          doctorName: currentDoctorName,
           chiefComplaints: [chiefComplaints],
           vitals: {
             bloodPressure: vitalsBP,
@@ -186,10 +221,10 @@ export const DoctorPatientWorkspace = ({ patientId, appointmentId, onBack, onCon
   // Generate & Publish Prescription
   const handleGeneratePrescription = async () => {
     const rxData = {
-      patientId: patientData?.patient?.patientId || patientId || 'PAT-1092',
-      patientName: patientData?.patient?.fullName || 'Rahul Sharma',
-      doctorId: 'DOC-102',
-      doctorName: 'Dr. Sarah Mitchell, MD',
+      patientId: patientData?.patient?.patientId || patientId || '',
+      patientName: patientData?.patient?.fullName || 'Patient',
+      doctorId: currentDoctorId,
+      doctorName: currentDoctorName,
       consultationDate: new Date().toISOString().split('T')[0],
       diagnosis,
       medicines,
@@ -227,14 +262,14 @@ export const DoctorPatientWorkspace = ({ patientId, appointmentId, onBack, onCon
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          patientId: patientData?.patient?.patientId || patientId || 'PAT-1092',
-          patientName: patientData?.patient?.fullName || 'Rahul Sharma',
+          patientId: patientData?.patient?.patientId || patientId || '',
+          patientName: patientData?.patient?.fullName || 'Patient',
           reportName: newReportName,
           reportCategory: newReportCategory,
           reportDate: new Date().toISOString().split('T')[0],
           laboratoryName: 'Apex Diagnostic Labs, New Delhi',
           additionalNotes: 'Uploaded by attending doctor during clinical consultation.',
-          uploadedBy: 'Doctor (Dr. Sarah Mitchell, MD)'
+          uploadedBy: `Doctor (${currentDoctorName})`
         })
       });
 
@@ -259,16 +294,16 @@ export const DoctorPatientWorkspace = ({ patientId, appointmentId, onBack, onCon
   }
 
   const patient = patientData?.patient || {
-    fullName: 'Rahul Sharma',
-    patientId: 'PAT-1092',
-    age: 34,
-    gender: 'Male',
-    phoneNumber: '+91 98765 43210',
-    email: 'rahul.sharma@example.com',
-    bloodGroup: 'O+',
-    allergies: ['Penicillin'],
-    relevantMedicalHistory: 'Type 2 Diabetes, mild seasonal allergic rhinitis',
-    emergencyContact: 'Pooja Sharma (Wife) - +91 98765 43211'
+    fullName: 'No Patient Selected',
+    patientId: '—',
+    age: '',
+    gender: '—',
+    phoneNumber: '—',
+    email: '—',
+    bloodGroup: '—',
+    allergies: [],
+    relevantMedicalHistory: 'None recorded',
+    emergencyContact: '—'
   };
 
   return (
@@ -294,7 +329,7 @@ export const DoctorPatientWorkspace = ({ patientId, appointmentId, onBack, onCon
               </span>
             </div>
             <p className="text-[11px] text-slate-500">
-              Dr. Sarah Mitchell, MD • Room 102 • OPD Consultation
+              {currentDoctorName} • OPD Consultation
             </p>
           </div>
         </div>
@@ -324,6 +359,15 @@ export const DoctorPatientWorkspace = ({ patientId, appointmentId, onBack, onCon
           </button>
         </div>
       </div>
+
+      {/* Ambient AI Consultation Scribe (Listens to Doctor & Patient, Summarizes, Extracts Details) */}
+      <AmbientConsultationScribe
+        patientName={patient.fullName}
+        patientId={patient.patientId}
+        doctorName={currentDoctorName}
+        isOpenDefault={false}
+        onApplyToWorkspace={handleApplyAmbientDetails}
+      />
 
       {/* 3-COLUMN DESKTOP WORKSPACE LAYOUT (PRD Section 3) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
@@ -893,3 +937,4 @@ export const DoctorPatientWorkspace = ({ patientId, appointmentId, onBack, onCon
     </div>
   );
 };
+

@@ -10,34 +10,22 @@ import {
 
 const AuthContext = createContext();
 
-// Pre-configured mock demo profiles for rapid 4-hour hackathon demoing (FR-1.2)
+// Pre-configured demo profiles (used by AuthModal's 1-click role switcher)
 export const MOCK_PROFILES = {
   doctor: {
-    uid: 'doc_sarah_01',
-    email: 'dr.sarah@mediflow.ai',
-    displayName: 'Dr. Sarah Mitchell, MD',
-    role: 'doctor',
-    specialty: 'Internal Medicine & General Practice',
-    avatar: '👩‍⚕️'
+    displayName: 'Dr. Sarah Mitchell',
+    specialty: 'Internal Medicine • 88% AI Assist Enabled',
+    role: 'doctor'
   },
   receptionist: {
-    uid: 'rec_alex_02',
-    email: 'reception@mediflow.ai',
-    displayName: 'Alex Carter',
-    role: 'receptionist',
-    shift: 'Morning Outpatient Desk',
-    avatar: '👨‍💼'
+    displayName: 'Priya Sharma',
+    shift: 'Morning Shift • Front Desk',
+    role: 'receptionist'
   },
   patient: {
-    uid: 'pat_rahul_03',
-    email: 'rahul.sharma@example.com',
     displayName: 'Rahul Sharma',
-    role: 'patient',
-    patientId: 'PAT-1092',
-    age: 34,
-    gender: 'Male',
-    allergies: ['Penicillin'],
-    avatar: '🧑'
+    patientId: 'PT-2024-0187',
+    role: 'patient'
   }
 };
 
@@ -63,7 +51,6 @@ export const AuthProvider = ({ children }) => {
     if (isRealFirebase && auth) {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
-          // If logged into Firebase
           const role = localStorage.getItem(`mediflow_role_${firebaseUser.uid}`) || 'doctor';
           const userObj = {
             uid: firebaseUser.uid,
@@ -79,16 +66,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Quick switch profile for rapid hackathon demo (FR-1.2)
   const switchDemoRole = (roleKey) => {
-    if (MOCK_PROFILES[roleKey]) {
-      setCurrentUser(MOCK_PROFILES[roleKey]);
-      localStorage.setItem('mediflow_active_user', JSON.stringify(MOCK_PROFILES[roleKey]));
-      setAuthError(null);
+    if (currentUser) {
+      const updated = { ...currentUser, role: roleKey };
+      setCurrentUser(updated);
+      localStorage.setItem('mediflow_active_user', JSON.stringify(updated));
     }
   };
 
-  // Real or mock login
+  // Real login with Firebase Auth & Backend Firestore Sync
   const login = async (email, password, role = 'doctor', displayName = '', persist = true) => {
     setLoading(true);
     setAuthError(null);
@@ -117,7 +103,6 @@ export const AuthProvider = ({ children }) => {
           };
         } catch (fbErr) {
           console.warn('Direct Firebase Auth sign-in error:', fbErr.message);
-          // If operation not allowed, continue to backend verification
         }
       }
 
@@ -126,7 +111,7 @@ export const AuthProvider = ({ children }) => {
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, role })
+          body: JSON.stringify({ email, password, role, displayName })
         });
         if (res.ok) {
           const data = await res.json();
@@ -134,9 +119,11 @@ export const AuthProvider = ({ children }) => {
             loggedUser = {
               uid: data.user.id || ('usr_' + Date.now()),
               email: data.user.email || email,
-              displayName: data.user.displayName || email.split('@')[0],
+              displayName: data.user.displayName || displayName || email.split('@')[0],
               role: data.user.role || role,
-              avatar: data.user.avatar || (role === 'doctor' ? '👨‍⚕️' : role === 'admin' ? '👨‍💼' : '🧑')
+              doctorId: data.user.doctorId,
+              patientId: data.user.patientId,
+              avatar: data.user.avatar || (role === 'doctor' ? '👩‍⚕️' : role === 'admin' ? '👨‍💼' : role === 'receptionist' ? '🧑‍💼' : '🧑')
             };
           }
         }
@@ -144,14 +131,14 @@ export const AuthProvider = ({ children }) => {
         console.warn('Backend login endpoint sync error:', backendErr.message);
       }
 
-      // 3. Fallback to local session if both are offline
+      // 3. Fallback
       if (!loggedUser) {
         loggedUser = {
           uid: 'user_' + Date.now(),
           email: email,
-          displayName: email.split('@')[0],
+          displayName: displayName || email.split('@')[0],
           role: role,
-          avatar: role === 'doctor' ? '👨‍⚕️' : role === 'admin' ? '👨‍💼' : role === 'receptionist' ? '🧑‍💼' : '🧑'
+          avatar: role === 'doctor' ? '👩‍⚕️' : role === 'admin' ? '👨‍💼' : role === 'receptionist' ? '🧑‍💼' : '🧑'
         };
       }
 
@@ -165,7 +152,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Real or mock registration with Firestore synchronization
+  // Real registration with Firestore synchronization
   const register = async (email, password, role = 'patient', displayName = '', persist = true) => {
     setLoading(true);
     setAuthError(null);
@@ -193,7 +180,7 @@ export const AuthProvider = ({ children }) => {
             role: role
           };
         } catch (fbErr) {
-          console.warn('Direct Firebase Auth registration error:', fbErr.message);
+          console.warn('Direct Firebase Auth registration note:', fbErr.message);
         }
       }
 
@@ -212,7 +199,9 @@ export const AuthProvider = ({ children }) => {
               email: data.user.email || email,
               displayName: data.user.displayName || displayName || email.split('@')[0],
               role: data.user.role || role,
-              avatar: data.user.avatar || (role === 'doctor' ? '👨‍⚕️' : role === 'admin' ? '👨‍💼' : '🧑')
+              doctorId: data.user.doctorId,
+              patientId: data.user.patientId,
+              avatar: data.user.avatar || (role === 'doctor' ? '👩‍⚕️' : role === 'admin' ? '👨‍💼' : role === 'receptionist' ? '🧑‍💼' : '🧑')
             };
           }
         }
@@ -227,7 +216,7 @@ export const AuthProvider = ({ children }) => {
           email: email,
           displayName: displayName || email.split('@')[0],
           role: role,
-          avatar: role === 'doctor' ? '👨‍⚕️' : role === 'admin' ? '👨‍💼' : role === 'receptionist' ? '🧑‍💼' : '🧑'
+          avatar: role === 'doctor' ? '👩‍⚕️' : role === 'admin' ? '👨‍💼' : role === 'receptionist' ? '🧑‍💼' : '🧑'
         };
       }
 
@@ -249,7 +238,6 @@ export const AuthProvider = ({ children }) => {
     } catch (e) {
       console.warn('Sign out error:', e);
     }
-    // Sign out to the dedicated Login Page
     setCurrentUser(null);
     localStorage.removeItem('mediflow_active_user');
   };

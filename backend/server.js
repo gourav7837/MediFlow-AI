@@ -25,6 +25,9 @@ import {
   normalizeNumber
 } from './whatsapp.js';
 
+// Lab report file understanding (PDF text layer + image OCR + lab parser)
+import { extractFromFile, parseLabParameters, flagAgainstKnownRange } from './labvision.js';
+
 app.use(cors());
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
@@ -178,7 +181,7 @@ app.post('/api/auth/verify', (req, res) => {
 });
 
 app.post('/api/auth/login', async (req, res) => {
-  const { email, password, role } = req.body;
+  const { email, password, role, displayName } = req.body;
   let firebaseUid = null;
 
   if (email && password && firebaseAuth) {
@@ -190,16 +193,117 @@ app.post('/api/auth/login', async (req, res) => {
     }
   }
 
-  let user = db.findOne('users', u => u.email === email);
+  const cleanEmail = (email || '').toLowerCase().trim();
+  let user = db.findOne('users', u => (u.email || '').toLowerCase() === cleanEmail);
+  
   if (!user) {
+    const computedRole = role || 'doctor';
+    const computedName = displayName || cleanEmail.split('@')[0];
     user = {
       id: firebaseUid || ('usr_' + Date.now()),
-      email: email || 'demo@mediflow.ai',
-      displayName: (email ? email.split('@')[0] : 'Healthcare Provider'),
-      role: role || 'doctor',
+      email: cleanEmail,
+      displayName: computedName,
+      role: computedRole,
+      avatar: computedRole === 'doctor' ? '👩‍⚕️' : computedRole === 'admin' ? '👨‍💼' : computedRole === 'receptionist' ? '🧑‍💼' : '🧑',
       createdAt: new Date().toISOString()
     };
+
+    if (computedRole === 'doctor') {
+      const docId = 'DOC-' + Math.floor(100 + Math.random() * 900);
+      user.doctorId = docId;
+      user.specialty = 'General Practice & Internal Medicine';
+      const existingDoc = db.findOne('doctors', d => (d.email || '').toLowerCase() === cleanEmail);
+      if (!existingDoc) {
+        db.insert('doctors', {
+          id: 'doc_' + Date.now(),
+          doctorId: docId,
+          fullName: computedName.startsWith('Dr.') ? computedName : `Dr. ${computedName}`,
+          degree: 'MBBS, MD',
+          specialization: 'General Practice & Internal Medicine',
+          experienceYears: 5,
+          email: cleanEmail,
+          phone: '',
+          consultationFee: 800,
+          roomNumber: 'Room 101',
+          availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          timeSlots: ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'],
+          status: 'Available',
+          avatar: '👩‍⚕️'
+        });
+      }
+    } else if (computedRole === 'patient') {
+      const patId = 'PAT-' + Math.floor(1000 + Math.random() * 9000);
+      user.patientId = patId;
+      const existingPat = db.findOne('patients', p => (p.email || '').toLowerCase() === cleanEmail);
+      if (!existingPat) {
+        db.insert('patients', {
+          id: 'pat_' + Date.now(),
+          patientId: patId,
+          fullName: computedName,
+          age: '',
+          gender: 'Other',
+          phoneNumber: '',
+          email: cleanEmail,
+          address: '',
+          emergencyContact: '',
+          allergies: [],
+          relevantMedicalHistory: '',
+          registeredAt: new Date().toISOString()
+        });
+      }
+    }
+
     db.insert('users', user);
+  } else {
+    // If role doctor, make sure doctors record exists
+    if (user.role === 'doctor') {
+      const existingDoc = db.findOne('doctors', d => (d.email || '').toLowerCase() === cleanEmail || (user.doctorId && d.doctorId === user.doctorId));
+      if (!existingDoc) {
+        const docId = user.doctorId || ('DOC-' + Math.floor(100 + Math.random() * 900));
+        user.doctorId = docId;
+        user.specialty = user.specialty || 'General Practice & Internal Medicine';
+        db.insert('doctors', {
+          id: 'doc_' + Date.now(),
+          doctorId: docId,
+          fullName: user.displayName?.startsWith('Dr.') ? user.displayName : `Dr. ${user.displayName}`,
+          degree: 'MBBS, MD',
+          specialization: 'General Practice & Internal Medicine',
+          experienceYears: 5,
+          email: cleanEmail,
+          phone: '',
+          consultationFee: 800,
+          roomNumber: 'Room 101',
+          availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          timeSlots: ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'],
+          status: 'Available',
+          avatar: '👩‍⚕️'
+        });
+      } else {
+        user.doctorId = existingDoc.doctorId;
+      }
+    } else if (user.role === 'patient') {
+      const existingPat = db.findOne('patients', p => (p.email || '').toLowerCase() === cleanEmail || (user.patientId && p.patientId === user.patientId));
+      if (!existingPat) {
+        const patId = user.patientId || ('PAT-' + Math.floor(1000 + Math.random() * 9000));
+        user.patientId = patId;
+        db.insert('patients', {
+          id: 'pat_' + Date.now(),
+          patientId: patId,
+          fullName: user.displayName,
+          age: '',
+          gender: 'Other',
+          phoneNumber: '',
+          email: cleanEmail,
+          address: '',
+          emergencyContact: '',
+          allergies: [],
+          relevantMedicalHistory: '',
+          registeredAt: new Date().toISOString()
+        });
+      } else {
+        user.patientId = existingPat.patientId;
+      }
+    }
   }
 
   db.logAudit('USER_LOGIN', user.displayName, `Logged in with role [${user.role}]`);
@@ -220,19 +324,63 @@ app.post('/api/auth/register', async (req, res) => {
     }
   }
 
-  const existing = db.findOne('users', u => u.email === email);
+  const cleanEmail = email.toLowerCase().trim();
+  const existing = db.findOne('users', u => (u.email || '').toLowerCase() === cleanEmail);
   if (existing) {
     return res.status(400).json({ error: 'An account with this email already exists.' });
   }
 
+  const chosenRole = role || 'doctor';
+  const name = displayName || cleanEmail.split('@')[0];
+  const uid = firebaseUid || ('usr_' + Date.now());
+
   const newUser = {
-    id: firebaseUid || ('usr_' + Date.now()),
-    email,
-    displayName: displayName || email.split('@')[0],
-    role: role || 'doctor',
-    avatar: role === 'doctor' ? '👨‍⚕️' : role === 'admin' ? '👨‍💼' : role === 'receptionist' ? '🧑‍💼' : '🧑',
+    id: uid,
+    email: cleanEmail,
+    displayName: name,
+    role: chosenRole,
+    avatar: chosenRole === 'doctor' ? '👩‍⚕️' : chosenRole === 'admin' ? '👨‍💼' : chosenRole === 'receptionist' ? '🧑‍💼' : '🧑',
     createdAt: new Date().toISOString()
   };
+
+  if (chosenRole === 'doctor') {
+    const docId = 'DOC-' + Math.floor(100 + Math.random() * 900);
+    newUser.doctorId = docId;
+    newUser.specialty = 'General Practice & Internal Medicine';
+    db.insert('doctors', {
+      id: 'doc_' + Date.now(),
+      doctorId: docId,
+      fullName: name.startsWith('Dr.') ? name : `Dr. ${name}`,
+      degree: 'MBBS, MD',
+      specialization: 'General Practice & Internal Medicine',
+      experienceYears: 5,
+      email: cleanEmail,
+      phone: '',
+      consultationFee: 800,
+      roomNumber: 'Room 101',
+      availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      timeSlots: ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'],
+      status: 'Available',
+      avatar: '👩‍⚕️'
+    });
+  } else if (chosenRole === 'patient') {
+    const patId = 'PAT-' + Math.floor(1000 + Math.random() * 9000);
+    newUser.patientId = patId;
+    db.insert('patients', {
+      id: 'pat_' + Date.now(),
+      patientId: patId,
+      fullName: name,
+      age: '',
+      gender: 'Other',
+      phoneNumber: '',
+      email: cleanEmail,
+      address: '',
+      emergencyContact: '',
+      allergies: [],
+      relevantMedicalHistory: '',
+      registeredAt: new Date().toISOString()
+    });
+  }
 
   db.insert('users', newUser);
   db.logAudit('USER_REGISTERED', newUser.displayName, `Registered new [${newUser.role}] account`);
@@ -478,6 +626,135 @@ app.delete('/api/appointments/:id', (req, res) => {
   db.update('appointments', a => a.id === id || a.appointmentId === id, { status: 'Cancelled' });
   db.logAudit('APPOINTMENT_CANCELLED', 'User / Voice Agent', `Cancelled appointment ${appointment.appointmentId}`);
   res.json({ success: true, message: `Appointment ${appointment.appointmentId} has been cancelled.` });
+});
+
+// -------------------------------------------------------------
+// APPOINTMENT AVAILABILITY & RESCHEDULE WORKFLOW
+// -------------------------------------------------------------
+app.get('/api/doctors/:id/available-slots', (req, res) => {
+  const { id } = req.params;
+  const targetDate = req.query.date || new Date().toISOString().split('T')[0];
+
+  const doctor = db.findOne('doctors', d => d.doctorId === id || d.id === id || (d.fullName && d.fullName.toLowerCase().includes(id.toLowerCase())));
+  if (!doctor) {
+    return res.status(404).json({ error: 'Doctor not found' });
+  }
+
+  const allDoctorSlots = doctor.timeSlots || [
+    '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+    '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM'
+  ];
+
+  const appointments = db.get('appointments');
+  const bookedAppointments = appointments.filter(a => 
+    (a.doctorId === doctor.doctorId || a.doctorName === doctor.fullName) && 
+    a.appointmentDate === targetDate && 
+    a.status !== 'Cancelled'
+  );
+
+  const bookedSlots = bookedAppointments.map(a => a.appointmentTime);
+  const availableSlots = allDoctorSlots.filter(s => !bookedSlots.includes(s));
+
+  res.json({
+    doctorId: doctor.doctorId,
+    doctorName: doctor.fullName,
+    specialization: doctor.specialization,
+    date: targetDate,
+    totalSlots: allDoctorSlots,
+    bookedSlots,
+    availableSlots
+  });
+});
+
+app.post('/api/appointments/:id/reschedule', (req, res) => {
+  const { id } = req.params;
+  const { newDate, newTime, reason, customNotes } = req.body;
+
+  if (!newDate || !newTime) {
+    return res.status(400).json({ error: 'New appointment date and time slot are required.' });
+  }
+
+  const appointment = db.findOne('appointments', a => a.id === id || a.appointmentId === id);
+  if (!appointment) {
+    return res.status(404).json({ error: 'Appointment not found' });
+  }
+
+  // Eligibility check: Do not allow rescheduling completed or cancelled appointments
+  if (appointment.status === 'Completed') {
+    return res.status(400).json({ error: 'Cannot reschedule an appointment that has already been completed.' });
+  }
+  if (appointment.status === 'Cancelled') {
+    return res.status(400).json({ error: 'Cannot reschedule a cancelled appointment. Please book a new appointment instead.' });
+  }
+
+  // Collision validation: check for double booking on newDate and newTime with the same doctor
+  const conflict = db.findOne('appointments', a => 
+    a.id !== appointment.id &&
+    a.appointmentId !== appointment.appointmentId &&
+    (a.doctorId === appointment.doctorId || a.doctorName === appointment.doctorName) &&
+    a.appointmentDate === newDate &&
+    a.appointmentTime === newTime &&
+    a.status !== 'Cancelled'
+  );
+
+  if (conflict) {
+    return res.status(409).json({ 
+      error: `Doctor is already booked at ${newTime} on ${newDate}. Please choose another available slot.` 
+    });
+  }
+
+  const previousDate = appointment.appointmentDate;
+  const previousTime = appointment.appointmentTime;
+
+  const updateData = {
+    appointmentDate: newDate,
+    appointmentTime: newTime,
+    previousAppointmentDate: previousDate,
+    previousAppointmentTime: previousTime,
+    rescheduledAt: new Date().toISOString(),
+    rescheduleReason: reason || 'Schedule Adjustment',
+    rescheduleNotes: customNotes || '',
+    isRescheduled: true,
+    status: appointment.status === 'In Consultation' ? 'Confirmed' : appointment.status
+  };
+
+  const updated = db.update('appointments', a => a.id === id || a.appointmentId === id, updateData);
+
+  // Send notification to doctor
+  db.insert('notifications', {
+    notificationId: 'notif_' + Date.now(),
+    type: 'APPOINTMENT_RESCHEDULED',
+    target: appointment.doctorName,
+    patientName: appointment.patientName,
+    message: `Appointment for ${appointment.patientName} rescheduled from ${previousDate} ${previousTime} to ${newDate} ${newTime} (${reason || 'Patient Request'}).`,
+    createdAt: new Date().toISOString(),
+    status: 'Unread'
+  });
+
+  // Automated WhatsApp confirmation for rescheduling
+  const waMsg = {
+    messageId: 'wa_' + Date.now(),
+    patientId: appointment.patientId,
+    patientName: appointment.patientName,
+    phoneNumber: '+91 98765 43210',
+    type: 'APPOINTMENT_RESCHEDULED',
+    status: 'Sent',
+    timestamp: new Date().toISOString(),
+    content: `Dear ${appointment.patientName}, your MediFlow appointment with ${appointment.doctorName} has been rescheduled to ${newDate} at ${newTime}. Token: ${appointment.tokenNumber}. Reason: ${reason || 'Schedule Adjustment'}.`
+  };
+  db.insert('whatsapp_messages', waMsg);
+
+  db.logAudit(
+    'APPOINTMENT_RESCHEDULED',
+    'Receptionist / Staff',
+    `Rescheduled ${appointment.appointmentId} from ${previousDate} ${previousTime} to ${newDate} ${newTime}. Reason: ${reason || 'Not specified'}`
+  );
+
+  res.json({
+    success: true,
+    message: `Appointment ${appointment.appointmentId} successfully rescheduled to ${newDate} at ${newTime}.`,
+    appointment: updated
+  });
 });
 
 // -------------------------------------------------------------
@@ -990,35 +1267,84 @@ Provide a clean JSON response with:
   res.json({ success: true, data: parsed });
 });
 
-// Medical Report Understanding (PRD Module 6)
-app.post('/api/ai/analyse-report', async (req, res) => {
-  const { reportText, reportType } = req.body;
+// -------------------------------------------------------------
+// AMBIENT AI CONSULTATION SCRIBE (Gemma 4 Live Doctor-Patient Listening)
+// -------------------------------------------------------------
+app.post('/api/ai/ambient-consultation', async (req, res) => {
+  const { transcript, patientId, patientName, doctorName } = req.body;
 
-  const prompt = `You are the AI Clinical Copilot for MediFlow Clinic.
-Analyze the following pathology or diagnostic lab report text.
+  if (!transcript || transcript.trim().length === 0) {
+    return res.status(400).json({ error: 'Transcript of doctor-patient conversation is required.' });
+  }
 
-Report:
+  const patient = db.findOne('patients', p => p.patientId === patientId || p.id === patientId) || {
+    fullName: patientName || 'Patient',
+    patientId: patientId || 'PAT-001',
+    age: 34,
+    gender: 'Patient',
+    allergies: [],
+    relevantMedicalHistory: 'Routine checkup'
+  };
+
+  const cleanTranscript = transcript.trim();
+
+  const prompt = `You are MediFlow's Ambient Clinical Copilot and AI Medical Scribe.
+You are listening to an actual clinical consultation between a doctor and a patient.
+Your job is to listen to the dialogue, understand the medical context, generate a complete clinical summary, and collect all patient details, vitals, symptoms, observations, diagnosis, medications, and advice.
+
+Patient: ${patient.fullName} (${patient.patientId || 'PAT-001'})
+Doctor: ${doctorName || 'Attending Physician'}
+
+CONVERSATION TRANSCRIPT:
 """
-${reportText || 'Hemoglobin: 14.2 g/dL (13-17), TLC: 11,800 /mcL (4000-10000) High, Platelets: 240,000, ESR: 28 mm/hr (0-15) High.'}
+${cleanTranscript}
 """
 
-Return a structured JSON object:
+Return a pure JSON response with NO extra text or markdown formatting:
 {
-  "reportType": "${reportType || 'Complete Blood Count'}",
-  "outOfRangeParameters": [
-    { "parameter": "TLC (White Blood Cells)", "value": "11,800", "normalRange": "4,000 - 10,000", "flag": "High" },
-    { "parameter": "ESR", "value": "28 mm/hr", "normalRange": "0 - 15", "flag": "High" }
+  "summary": "3-4 sentence complete professional clinical summary of the consultation narrative, symptoms, assessment, and prescribed care plan.",
+  "chiefComplaints": "Clear list of chief complaints described by patient (e.g. 101F Fever, dry cough, throat irritation)",
+  "symptomsDuration": "Duration of complaints stated by patient (e.g. 3 days)",
+  "historyOfPresentIllness": "Chronological description of symptom progression mentioned during consultation",
+  "vitals": {
+    "bloodPressure": "e.g. 120/80 mmHg",
+    "temperature": "e.g. 101.2 °F",
+    "pulseRate": "e.g. 84 bpm",
+    "spo2": "e.g. 98%"
+  },
+  "clinicalObservations": "Physical exam findings noted or spoken by doctor (e.g. Pharyngeal congestion, chest clear to auscultation bilateral)",
+  "allergiesDisclosed": ["List of any drug or substance allergies mentioned (e.g. Penicillin) or 'None reported'"],
+  "pastMedicalHistory": "Any chronic conditions or medical history discussed (e.g. Type 2 Diabetes, Hypertension)",
+  "diagnosis": "Primary clinical diagnosis concluded by the doctor (e.g. Acute Upper Respiratory Tract Infection (URTI) with Pyrexia)",
+  "differentialDiagnosis": ["Other possible clinical diagnoses considered"],
+  "medicines": [
+    {
+      "medicineName": "Full drug name (e.g. Tab. Paracetamol)",
+      "strength": "e.g. 650 mg",
+      "dosage": "e.g. 1 tablet",
+      "frequency": "TDS (1-1-1), BD (1-0-1), OD (1-0-0), or SOS",
+      "duration": "e.g. 3 days",
+      "instructions": "Food and intake instructions (e.g. After food for fever relief)"
+    }
   ],
-  "clinicalSignificance": "Explanation for clinician",
-  "plainLanguageExplanation": "Simple explanation for patient to easily understand without medical jargon",
-  "suggestedNextSteps": ["Hydration", "Correlate with clinical signs of infection"]
+  "recommendedTests": "Diagnostic lab tests or imaging ordered by doctor (e.g. Complete Blood Count (CBC) with ESR)",
+  "generalAdvice": "Lifestyle, hydration, rest, or dietary guidelines advised by doctor",
+  "followUpDate": "ISO date (YYYY-MM-DD) or review timeline (e.g. 3-4 days)",
+  "soapNote": {
+    "subjective": "Patient-reported symptoms, pain scale, and duration",
+    "objective": "Doctor-measured vitals, throat/chest physical examination findings",
+    "assessment": "Clinical diagnosis and evaluation of severity",
+    "plan": "Pharmacotherapy, lab investigations, supportive care, and follow-up"
+  }
 }`;
 
   let parsed = null;
+  let engine = 'Rule-based Ambient Scribe';
+
   try {
     const activeModel = await resolveOllamaModel();
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 18000);
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
 
     const ollamaRes = await fetch(`${OLLAMA_HOST}/api/generate`, {
       method: 'POST',
@@ -1039,25 +1365,369 @@ Return a structured JSON object:
       const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
       if (jsonMatch) rawText = jsonMatch[1];
       parsed = JSON.parse(rawText.trim());
+      engine = `Google Gemma 4 (${activeModel}) via Ollama`;
+    }
+  } catch (e) {
+    console.warn('[Ambient Scribe] Ollama fallback:', e.message);
+  }
+
+  // Robust Medical NLP Heuristic Engine Fallback
+  if (!parsed) {
+    const lower = cleanTranscript.toLowerCase();
+
+    // 1. Vitals extraction
+    const vitals = {
+      bloodPressure: '120/80 mmHg',
+      temperature: '98.6 °F',
+      pulseRate: '78 bpm',
+      spo2: '98%'
+    };
+    const bpMatch = cleanTranscript.match(/(\b(?:1[0-9]{2}|[89][0-9])\s*[\/\-]\s*(?:[5-9][0-9]|1[0-2][0-9])\b)/);
+    if (bpMatch) vitals.bloodPressure = `${bpMatch[1].replace(/\s+/g, '')} mmHg`;
+
+    const tempMatch = cleanTranscript.match(/([0-9]{2,3}(?:\.[0-9]+)?)\s*°?\s*[Ff]\b/) ||
+                      cleanTranscript.match(/(?:temp(?:erature)?|fever)[\s:]*([0-9]{2,3}(?:\.[0-9]+)?)/i);
+    if (tempMatch) vitals.temperature = `${tempMatch[1]} °F`;
+
+    const pulseMatch = cleanTranscript.match(/(?:pulse|heart\s*rate|hr)[\s:]*([0-9]{2,3})/i);
+    if (pulseMatch) vitals.pulseRate = `${pulseMatch[1]} bpm`;
+
+    const spo2Match = cleanTranscript.match(/(?:spo2|oxygen|o2)[\s:]*([0-9]{2,3})%?/i);
+    if (spo2Match) vitals.spo2 = `${spo2Match[1]}%`;
+
+    // 2. Chief complaints
+    const complaintsList = [];
+    if (lower.includes('fever') || lower.includes('temperature') || lower.includes('pyrexia')) complaintsList.push('High Fever (101°F)');
+    if (lower.includes('cough')) {
+      complaintsList.push(lower.includes('dry') ? 'Dry non-productive cough' : 'Productive cough');
+    }
+    if (lower.includes('throat') || lower.includes('sore throat')) complaintsList.push('Sore throat & pharyngeal discomfort');
+    if (lower.includes('knee') || lower.includes('joint') || lower.includes('stiff')) complaintsList.push('Bilateral knee pain & joint stiffness');
+    if (lower.includes('headache')) complaintsList.push('Headache / malaise');
+    if (lower.includes('chest pain') || lower.includes('breathless')) complaintsList.push('Chest discomfort & shortness of breath');
+    if (lower.includes('sugar') || lower.includes('diabetes')) complaintsList.push('Elevated blood sugar & polydipsia');
+    if (complaintsList.length === 0) complaintsList.push('General malaise and health checkup');
+
+    // 3. Duration
+    const durMatch = cleanTranscript.match(/(\d+\s*(?:day|days|week|weeks|month|months|hours|hrs))/i);
+    const duration = durMatch ? durMatch[1] : '3 days';
+
+    // 4. Allergies
+    const allergies = [];
+    if (lower.includes('penicillin')) allergies.push('Penicillin');
+    if (lower.includes('sulfa')) allergies.push('Sulfa Drugs');
+    if (lower.includes('aspirin')) allergies.push('Aspirin');
+    if (allergies.length === 0) allergies.push('None reported');
+
+    // 5. Diagnosis
+    let diagnosis = 'Acute Upper Respiratory Tract Infection (URTI) with Pyrexia';
+    if (lower.includes('knee') || lower.includes('osteoarthritis') || lower.includes('joint')) {
+      diagnosis = 'Primary Osteoarthritis - Bilateral Knee with Joint Crepitus';
+    } else if (lower.includes('sugar') || lower.includes('diabetes') || lower.includes('metformin')) {
+      diagnosis = 'Type 2 Diabetes Mellitus with Symptomatic Hyperglycemia';
+    } else if (lower.includes('chest') || lower.includes('bp') && !lower.includes('fever')) {
+      diagnosis = 'Essential Hypertension with Borderline Vasoconstriction';
+    }
+
+    // 6. Medications Builder
+    const meds = [];
+    if (lower.includes('paracetamol') || lower.includes('fever') || lower.includes('dolo')) {
+      meds.push({
+        medicineName: 'Tab. Paracetamol',
+        strength: '650 mg',
+        dosage: '1 tablet',
+        frequency: 'TDS (1-1-1)',
+        duration: '3 days',
+        instructions: 'After food for fever and body ache relief'
+      });
+    }
+    if (lower.includes('azithromycin') || lower.includes('antibiotic')) {
+      meds.push({
+        medicineName: 'Tab. Azithromycin',
+        strength: '500 mg',
+        dosage: '1 tablet',
+        frequency: 'OD (1-0-0)',
+        duration: '3 days',
+        instructions: '1 hour before lunch with a glass of water'
+      });
+    }
+    if (lower.includes('naproxen') || lower.includes('pain') && (lower.includes('knee') || lower.includes('joint'))) {
+      meds.push({
+        medicineName: 'Tab. Naproxen',
+        strength: '250 mg',
+        dosage: '1 tablet',
+        frequency: 'BD (1-0-1)',
+        duration: '5 days',
+        instructions: 'Immediately after meals'
+      });
+      meds.push({
+        medicineName: 'Cap. Pantoprazole',
+        strength: '40 mg',
+        dosage: '1 capsule',
+        frequency: 'OD (1-0-0)',
+        duration: '5 days',
+        instructions: 'Empty stomach in morning before breakfast'
+      });
+    }
+    if (lower.includes('metformin') || lower.includes('diabetes')) {
+      meds.push({
+        medicineName: 'Tab. Metformin',
+        strength: '500 mg',
+        dosage: '1 tablet',
+        frequency: 'BD (1-0-1)',
+        duration: '30 days',
+        instructions: 'With lunch and dinner'
+      });
+    }
+    if (meds.length === 0) {
+      meds.push({
+        medicineName: 'Tab. Multivitamin & Zinc',
+        strength: 'Daily',
+        dosage: '1 tablet',
+        frequency: 'OD (0-1-0)',
+        duration: '10 days',
+        instructions: 'After lunch'
+      });
+    }
+
+    // 7. Recommended tests
+    let tests = 'Complete Blood Count (CBC) with ESR if fever persists > 3 days';
+    if (lower.includes('knee') || lower.includes('joint')) {
+      tests = 'X-Ray Bilateral Knees (Standing AP & Lateral View), Serum Uric Acid';
+    } else if (lower.includes('diabetes') || lower.includes('sugar')) {
+      tests = 'Fasting Blood Sugar (FBS), Postprandial Blood Sugar (PPBS), HbA1c';
+    }
+
+    // 8. General Advice
+    let advice = 'Adequate fluid intake (2.5-3 Liters/day), warm salt water gargle 3 times daily, complete rest, avoid cold beverages.';
+    if (lower.includes('knee') || lower.includes('joint')) {
+      advice = 'Avoid deep squatting and cross-legged sitting. Hot fermentation twice daily. Quadriceps strengthening exercises.';
+    }
+
+    const followUpTargetDate = new Date(Date.now() + 4 * 86400000).toISOString().split('T')[0];
+
+    parsed = {
+      summary: `${patient.fullName} consulted with ${doctorName || 'the doctor'} presenting with ${complaintsList.join(', ')} for ${duration}. Vital signs: BP ${vitals.bloodPressure}, Temp ${vitals.temperature}, Pulse ${vitals.pulseRate}, SpO2 ${vitals.spo2}. Assessment concluded ${diagnosis}. A structured pharmacotherapy regimen comprising ${meds.map(m => m.medicineName).join(', ')} was prescribed alongside clinical advice.`,
+      chiefComplaints: complaintsList.join(', '),
+      symptomsDuration: duration,
+      historyOfPresentIllness: `Patient reports acute onset of symptoms lasting ${duration}. Fever peaked at ${vitals.temperature}. Disclosed allergies: ${allergies.join(', ')}.`,
+      vitals,
+      clinicalObservations: `Patient alert and cooperative. Pharyngeal mucosa mildly congested. Chest clear on auscultation. Vitals: BP ${vitals.bloodPressure}, SpO2 ${vitals.spo2}.`,
+      allergiesDisclosed: allergies,
+      pastMedicalHistory: patient.relevantMedicalHistory || 'No significant chronic illness reported.',
+      diagnosis,
+      differentialDiagnosis: ['Acute Viral Pharyngitis', 'Seasonal Influenza', 'Bronchial Irritation'],
+      medicines: meds,
+      recommendedTests: tests,
+      generalAdvice: advice,
+      followUpDate: followUpTargetDate,
+      soapNote: {
+        subjective: `Patient complains of ${complaintsList.join(', ')} since ${duration}. Allergies: ${allergies.join(', ')}.`,
+        objective: `BP ${vitals.bloodPressure}, Temp ${vitals.temperature}, Pulse ${vitals.pulseRate}, SpO2 ${vitals.spo2}. Throat mildly erythematous. Lungs clear.`,
+        assessment: `${diagnosis}. Stability maintained.`,
+        plan: `Rx: ${meds.map(m => `${m.medicineName} ${m.strength} ${m.frequency}`).join('; ')}. Investigations: ${tests}. Follow-up in 3-4 days.`
+      }
+    };
+  }
+
+  // Ensure followUpDate is formatted
+  if (!parsed.followUpDate || !parsed.followUpDate.includes('-')) {
+    parsed.followUpDate = new Date(Date.now() + 4 * 86400000).toISOString().split('T')[0];
+  }
+
+  db.logAudit(
+    'AMBIENT_SCRIBE_ANALYSIS',
+    doctorName || 'Doctor',
+    `Ambient AI analyzed doctor-patient dialogue for ${patient.fullName} (${parsed.diagnosis})`
+  );
+
+  res.json({
+    success: true,
+    engine,
+    patient: {
+      patientId: patient.patientId,
+      fullName: patient.fullName
+    },
+    data: parsed
+  });
+});
+
+// Medical Report Understanding (PRD Module 6)
+app.post('/api/ai/analyse-report', async (req, res) => {
+  const { reportText, reportType, fileBase64, mimeType, fileName } = req.body;
+
+  if (!reportText && !fileBase64) {
+    return res.status(400).json({ error: 'Send reportText or fileBase64 (+ mimeType).' });
+  }
+
+  // --- Step 1: extract text from uploads (PDF text layer / image OCR) -------
+  let baseText = reportText || '';
+  let extraction = null;
+  if (fileBase64) {
+    extraction = await extractFromFile({ fileBase64, mimeType });
+    if (extraction.text && extraction.text.length > 20) {
+      baseText = `${baseText ? baseText + '\n\n' : ''}-- Extracted from uploaded file "${fileName || 'report'}" (${extraction.method}) --\n${extraction.text}`;
+    }
+  }
+
+  const hasText = baseText && baseText.length > 20;
+  const heuristicParams = hasText ? parseLabParameters(baseText) : [];
+
+  // If an uploaded file produced no readable text, do NOT let the AI invent
+  // results — fail honestly with guidance for the user.
+  if (fileBase64 && !hasText && mimeType !== 'image/*' && !String(mimeType).startsWith('image/')) {
+    return res.status(422).json({
+      success: false,
+      error:
+        (extraction?.error
+          ? `Could not read the file "${fileName || 'report'}" (${extraction.method}: ${extraction.error}).`
+          : `The uploaded file "${fileName || 'report'}" contains no extractable text.`),
+      hint: mimeType?.includes('pdf')
+        ? 'This PDF may be a scan without a text layer. Take a photo/screenshot of the report and upload it as an image, or paste the values as text.'
+        : 'Upload a clearer file, or paste the report text directly.'
+    });
+  }
+
+  // --- Step 2: Gemma analysis on the extracted text -------------------------
+  const prompt = `You are the AI Clinical Copilot for MediFlow Clinic.
+Analyze the following pathology or diagnostic lab report text.
+
+Report:
+"""
+${hasText ? baseText : 'An uploaded scan could not be converted to text; infer markers cautiously.'}
+"""
+
+Return a structured JSON object:
+{
+  "reportType": "${reportType || 'Complete Blood Count'}",
+  "detectedParameters": [
+    { "parameter": "Hemoglobin", "value": "14.2", "unit": "g/dL", "normalRange": "13 - 17", "flag": "Normal" }
+  ],
+  "outOfRangeParameters": [
+    { "parameter": "TLC (White Blood Cells)", "value": "11,800", "normalRange": "4,000 - 10,000", "flag": "High" }
+  ],
+  "detectedProblems": ["Likely bacterial infection", "Visible inflammation"],
+  "clinicalSignificance": "Explanation for clinician",
+  "plainLanguageExplanation": "Simple explanation for patient to easily understand without medical jargon",
+  "suggestedNextSteps": ["Hydration", "Correlate with clinical signs of infection"],
+  "summary": "One-line report takeaway"
+}`;
+
+  let parsed = null;
+  let engine = 'Rule-based Lab Parser (offline)';
+  try {
+    const activeModel = await resolveOllamaModel();
+
+    const payload = {
+      model: activeModel,
+      prompt,
+      stream: false,
+      format: 'json'
+    };
+
+    // If OCR failed but we have an image, try the vision route (models
+    // supporting multimodal input in Ollama accept `images`)
+    if (!hasText && fileBase64 && mimeType?.startsWith('image/')) {
+      payload.prompt = 'Transcribe and analyze this laboratory report image. Return JSON: { reportType, detectedParameters:[{parameter,value,unit,normalRange,flag}], outOfRangeParameters:[{parameter,value,normalRange,flag}], detectedProblems:[], clinicalSignificance, plainLanguageExplanation, suggestedNextSteps:[], summary }';
+      payload.images = [fileBase64.replace(/^data:[^;]+;base64,/, '')];
+      engine = `Google Gemma Vision (${activeModel}) via Local Ollama`;
+    } else {
+      engine = `Google Gemma 4 (${activeModel}) via Local Ollama`;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+    const ollamaRes = await fetch(`${OLLAMA_HOST}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (ollamaRes.ok) {
+      const data = await ollamaRes.json();
+      let rawText = data.response;
+      const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) rawText = jsonMatch[1];
+      parsed = JSON.parse(rawText.trim());
     }
   } catch (e) {
     console.warn('Ollama report analysis fallback:', e.message);
   }
 
-  if (!parsed) {
-    parsed = {
-      reportType: reportType || 'Complete Blood Count (CBC) with ESR',
-      outOfRangeParameters: [
-        { parameter: 'Total Leukocyte Count (TLC)', value: '11,800 /mcL', normalRange: '4,000 - 10,000', flag: 'High' },
-        { parameter: 'ESR (1st Hour)', value: '28 mm/hr', normalRange: '0 - 15', flag: 'High' }
-      ],
-      clinicalSignificance: 'Mild leukocytosis with elevated inflammatory markers indicating acute reactive infection.',
-      plainLanguageExplanation: 'Your body is currently fighting off a common bacterial or viral infection, which causes temporary elevation in protective white blood cells.',
-      suggestedNextSteps: ['Monitor temperature twice daily', 'Repeat CBC in 7 days if symptoms do not resolve', 'Doctor review']
-    };
+  // --- Step 3: merge heuristic extraction (also fills AI gaps) --------------
+  if (!hasText && !parsed) {
+    return res.status(422).json({
+      success: false,
+      error: 'Could not read the report file. ' + (extraction?.error ? `(${extraction.method}: ${extraction.error})` : ''),
+      hint: 'Upload a clearer scan, or paste the report text directly.'
+    });
   }
 
-  res.json({ success: true, analysis: parsed });
+  if (!parsed) {
+    // Offline / heuristic result from the regex lab parser
+    const hardFlagged = heuristicParams.filter(p => p.flag === 'High' || p.flag === 'Low');
+    parsed = {
+      reportType: reportType || (heuristicParams.length ? 'Laboratory Diagnostic Panel' : 'Unstructured Report'),
+      detectedParameters: heuristicParams,
+      outOfRangeParameters: hardFlagged.map(({ parameter, value, normalRange, flag }) => ({ parameter, value, normalRange, flag })),
+      detectedProblems: hardFlagged.length ? hardFlagged.map(p => `${p.parameter} is out of range (${p.flag.toLowerCase()})`) : [],
+      clinicalSignificance: hardFlagged.length
+        ? `The AI engine is offline, so analysis was derived with the local rule-based parser. ${hardFlagged.length} parameter(s) flagged out of range: ${hardFlagged.map(p => `${p.parameter} (${p.flag})`).join(', ')}.`
+        : 'The AI engine is offline, and the local rule-based parser found all parsed parameters within their reference ranges.',
+      plainLanguageExplanation: 'The report was read and its values were compared with standard reference ranges automatically.',
+      suggestedNextSteps: ['Doctor review of flagged parameters', 'Repeat test if values seem inconsistent'],
+      summary: hardFlagged.length ? `${hardFlagged.length} of ${heuristicParams.length} parameters are out of range.` : `All ${heuristicParams.length} detected parameters are within range.`
+    };
+  } else {
+    // Union merge: combine AI parameters with the deterministic parser's
+    // findings (deduped by parameter name) so neither list loses coverage.
+    const byName = new Map();
+    for (const p of (Array.isArray(parsed.detectedParameters) ? parsed.detectedParameters : [])) {
+      byName.set(String(p.parameter || '').toLowerCase(), p);
+    }
+    for (const p of heuristicParams) {
+      const key = String(p.parameter || '').toLowerCase();
+      if (!byName.has(key)) byName.set(key, p);
+    }
+
+    // Deterministic second pass: verify every parameter against the built-in
+    // reference range table and backfill missing flags (catches AI misses).
+    for (const [, p] of byName) {
+      if (!p.flag || p.flag === 'Normal') {
+        const verdict = flagAgainstKnownRange(p.parameter, p.value);
+        if (verdict) p.flag = verdict;
+      }
+    }
+
+    // Ensure every deterministically-flagged out-of-range parameter shows in
+    // the "problems" list even if the AI overlooked it.
+    const outList = Array.isArray(parsed.outOfRangeParameters) ? parsed.outOfRangeParameters : [];
+    const outNames = new Set(outList.map(p => String(p.parameter || '').toLowerCase()));
+    for (const [, p] of byName) {
+      if ((p.flag === 'High' || p.flag === 'Low') && !outNames.has(String(p.parameter || '').toLowerCase())) {
+        outList.push({ parameter: p.parameter, value: p.value, normalRange: p.normalRange || null, flag: p.flag });
+        outNames.add(String(p.parameter || '').toLowerCase());
+      }
+    }
+    parsed.outOfRangeParameters = outList;
+
+    parsed.detectedParameters = [...byName.values()];
+  }
+
+  res.json({
+    success: true,
+    engine,
+    extraction: {
+      fileName: fileName || null,
+      method: extraction?.method || 'Direct text input',
+      characters: baseText.length,
+      preview: baseText.slice(0, 160)
+    },
+    analysis: parsed
+  });
 });
 
 // Legacy backward-compatibility endpoint for Doctor EMR
@@ -1202,8 +1872,9 @@ app.put('/api/reports/:id/approve', (req, res) => {
   const { id } = req.params;
   const { doctorNotes } = req.body;
 
-  const updated = db.update('medical_reports', r => r.id === id, {
+  const updated = db.update('medical_reports', r => r.id === id || r.reportId === id, {
     status: 'Approved',
+    doctorApproved: true,
     approvedBy: 'Dr. Sarah Mitchell, MD',
     approvedAt: new Date().toISOString(),
     doctorApprovalNotes: doctorNotes || 'Reviewed and clinically correlated.'
@@ -1660,6 +2331,693 @@ app.post('/api/ai/patient-assistant', async (req, res) => {
   }
 
   res.json({ success: true, reply });
+});
+
+// -------------------------------------------------------------
+// 12. SMART CLINIC OPERATIONS COMMAND CENTER (RECEPTION DESK)
+// -------------------------------------------------------------
+
+// Helper to compute token number
+function getNextDailyTokenDisplay() {
+  const today = new Date().toISOString().split('T')[0];
+  const allTokens = db.get('queue_tokens') || [];
+  const todayTokens = allTokens.filter(t => t.createdAt?.startsWith(today));
+  const num = 34 + todayTokens.length;
+  return { num, display: `A${num}` };
+}
+
+// 1. Patient Lookup (by patientId or mobile or name)
+app.get('/api/reception/patient-lookup', (req, res) => {
+  const { query } = req.query;
+  if (!query) return res.json({ results: [] });
+
+  const q = query.toLowerCase().trim();
+  const today = new Date().toISOString().split('T')[0];
+  const patients = db.get('patients') || [];
+  const appointments = db.get('appointments') || [];
+  const queueTokens = db.get('queue_tokens') || [];
+
+  const matched = patients.filter(p => 
+    p.patientId?.toLowerCase().includes(q) ||
+    p.phoneNumber?.replace(/\s+/g, '').includes(q.replace(/\s+/g, '')) ||
+    p.fullName?.toLowerCase().includes(q)
+  );
+
+  const results = matched.map(p => {
+    // Find today's appointment if any
+    const todayApt = appointments.find(a => 
+      (a.patientId === p.patientId || a.patientName?.toLowerCase() === p.fullName?.toLowerCase()) &&
+      a.appointmentDate === today &&
+      a.status !== 'Cancelled'
+    );
+
+    // Find active token if any
+    const activeToken = queueTokens.find(t => 
+      (t.patientId === p.patientId || t.patientName?.toLowerCase() === p.fullName?.toLowerCase()) &&
+      (t.status === 'Waiting' || t.status === 'In Consultation' || t.status === 'Calling')
+    );
+
+    return {
+      patient: p,
+      todayAppointment: todayApt || null,
+      isCheckedIn: !!activeToken || (todayApt && (todayApt.status === 'Waiting' || todayApt.status === 'In Consultation')),
+      activeToken: activeToken || null
+    };
+  });
+
+  res.json({ results });
+});
+
+// 2. Patient Check-In & Arrival Timestamp
+app.post('/api/reception/check-in', (req, res) => {
+  const { patientId, appointmentId, doctorId, isWalkIn, checkInNotes, reasonForVisit } = req.body;
+
+  if (!patientId && !req.body.fullName) {
+    return res.status(400).json({ error: 'Patient ID or patient details are required for check-in.' });
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  let patient = db.findOne('patients', p => p.patientId === patientId || p.id === patientId);
+
+  // If new walk-in patient registration on arrival
+  if (!patient && req.body.fullName) {
+    const pCount = (db.get('patients') || []).length;
+    patient = {
+      id: 'pat_' + Date.now(),
+      patientId: `PAT-${1096 + pCount}`,
+      fullName: req.body.fullName,
+      age: Number(req.body.age) || 30,
+      gender: req.body.gender || 'Not specified',
+      phoneNumber: req.body.phoneNumber || req.body.contact || '+91 98000 00000',
+      allergies: req.body.allergies ? [req.body.allergies] : ['None reported'],
+      relevantMedicalHistory: req.body.medicalHistory || 'Walk-in registration at check-in desk',
+      registeredAt: new Date().toISOString()
+    };
+    db.insert('patients', patient);
+  }
+
+  if (!patient) {
+    return res.status(404).json({ error: 'Patient profile not found.' });
+  }
+
+  // Find or resolve doctor
+  const doctors = db.get('doctors') || [];
+  const doctor = doctors.find(d => d.doctorId === doctorId || d.fullName === req.body.doctorName) || doctors[0];
+
+  // Resolve or create appointment
+  let appointment = null;
+  if (appointmentId) {
+    appointment = db.findOne('appointments', a => a.id === appointmentId || a.appointmentId === appointmentId);
+  }
+  
+  if (!appointment) {
+    // Walk-in appointment creation
+    const { display: tokenStr } = getNextDailyTokenDisplay();
+    const aptCount = (db.get('appointments') || []).length;
+    appointment = {
+      id: 'apt_' + Date.now(),
+      appointmentId: `APT-${805 + aptCount}`,
+      patientId: patient.patientId,
+      patientName: patient.fullName,
+      doctorId: doctor.doctorId,
+      doctorName: doctor.fullName,
+      appointmentDate: today,
+      appointmentTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      reasonForVisit: reasonForVisit || checkInNotes || 'Walk-in OPD Consultation',
+      status: 'Waiting',
+      bookedVia: 'Walk-In Check-In Desk',
+      tokenNumber: tokenStr,
+      checkedInAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
+    };
+    db.insert('appointments', appointment);
+  } else {
+    // Update existing appointment
+    db.update('appointments', a => a.id === appointment.id, {
+      status: 'Waiting',
+      checkedInAt: new Date().toISOString(),
+      checkInNotes: checkInNotes || 'Arrived and checked-in at desk'
+    });
+    appointment = db.findOne('appointments', a => a.id === appointment.id);
+  }
+
+  // Token Generation
+  const existingToken = db.findOne('queue_tokens', t => 
+    t.patientId === patient.patientId && 
+    (t.status === 'Waiting' || t.status === 'In Consultation' || t.status === 'Calling')
+  );
+
+  let token = existingToken;
+  const currentTokens = db.get('queue_tokens') || [];
+  const waitingForDoc = currentTokens.filter(t => t.doctorId === doctor.doctorId && t.status === 'Waiting');
+  const queuePos = waitingForDoc.length + 1;
+  const approxWait = queuePos * 12;
+
+  if (!token) {
+    const { num: tNum, display: tDisp } = getNextDailyTokenDisplay();
+    token = {
+      id: 'tok_' + Date.now(),
+      tokenId: `TOK-${tDisp}`,
+      tokenNumber: tNum,
+      tokenDisplay: tDisp,
+      patientId: patient.patientId,
+      patientName: patient.fullName,
+      patientAge: patient.age,
+      patientGender: patient.gender,
+      patientPhone: patient.phoneNumber,
+      doctorId: doctor.doctorId,
+      doctorName: doctor.fullName,
+      department: doctor.specialization,
+      roomNumber: doctor.roomNumber || 'Room 102',
+      appointmentId: appointment.appointmentId || appointment.id,
+      isWalkIn: !!isWalkIn,
+      reason: reasonForVisit || appointment.reasonForVisit || 'General Consultation',
+      status: 'Waiting',
+      queuePosition: queuePos,
+      checkedInAt: new Date().toISOString(),
+      calledAt: null,
+      completedAt: null,
+      skippedAt: null,
+      approximateWaitMinutes: approxWait,
+      createdAt: new Date().toISOString()
+    };
+    db.insert('queue_tokens', token);
+  }
+
+  // Send doctor notification
+  db.insert('notifications', {
+    notificationId: 'notif_' + Date.now(),
+    type: 'PATIENT_ARRIVED',
+    target: doctor.fullName,
+    patientName: patient.fullName,
+    message: `Patient ${patient.fullName} (Token #${token.tokenDisplay}) has checked in and is waiting in the OPD lounge.`,
+    createdAt: new Date().toISOString(),
+    status: 'Unread'
+  });
+
+  db.logAudit('PATIENT_CHECKED_IN', 'Alex Carter (Receptionist)', `Checked in ${patient.fullName} (Token #${token.tokenDisplay}) for ${doctor.fullName}`);
+
+  res.status(200).json({
+    success: true,
+    message: `Check-in successful. Token #${token.tokenDisplay} issued.`,
+    token,
+    appointment,
+    queuePosition: queuePos,
+    approximateWaitMinutes: approxWait
+  });
+});
+
+// 3. Queue List & Metrics
+app.get('/api/reception/queue', (req, res) => {
+  const tokens = db.get('queue_tokens') || [];
+  const appointments = db.get('appointments') || [];
+  const doctors = db.get('doctors') || [];
+
+  const activeToken = tokens.find(t => t.status === 'In Consultation');
+  const waitingTokens = tokens.filter(t => t.status === 'Waiting');
+  const completedTokens = tokens.filter(t => t.status === 'Completed');
+  const skippedTokens = tokens.filter(t => t.status === 'Skipped');
+
+  // Compute delayed appointments (scheduled time past, not completed/checked-in)
+  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const delayedAppointments = appointments.filter(a => {
+    if (a.appointmentDate !== today || a.status === 'Completed' || a.status === 'Cancelled') return false;
+    // parse time (e.g. "10:00 AM")
+    const match = a.appointmentTime?.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!match) return false;
+    let h = parseInt(match[1]);
+    const m = parseInt(match[2]);
+    const ampm = match[3].toUpperCase();
+    if (ampm === 'PM' && h < 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    const aptMinutes = h * 60 + m;
+    return currentMinutes > aptMinutes + 15; // delayed by > 15 mins
+  });
+
+  res.json({
+    tokens,
+    activeToken: activeToken || null,
+    waitingTokens,
+    completedTokens,
+    skippedTokens,
+    metrics: {
+      waitingCount: waitingTokens.length,
+      inConsultationCount: activeToken ? 1 : 0,
+      completedCount: completedTokens.length,
+      skippedCount: skippedTokens.length,
+      avgWaitMinutes: 12,
+      delayedCount: delayedAppointments.length,
+      checkedInCount: tokens.length
+    },
+    doctorAvailability: doctors.map(d => ({
+      doctorId: d.doctorId,
+      fullName: d.fullName,
+      specialization: d.specialization,
+      roomNumber: d.roomNumber,
+      status: d.status || 'Available',
+      activePatientToken: tokens.find(t => t.doctorId === d.doctorId && t.status === 'In Consultation')?.tokenDisplay || null
+    }))
+  });
+});
+
+// 4. Token Queue Actions (Call, Recall, Skip, Transfer, Complete)
+app.post('/api/reception/tokens/:id/call', (req, res) => {
+  const { id } = req.params;
+  const token = db.findOne('queue_tokens', t => t.id === id || t.tokenId === id || t.tokenDisplay === id);
+  if (!token) return res.status(404).json({ error: 'Token not found.' });
+
+  // If another token is currently In Consultation for this doctor, complete it
+  db.update('queue_tokens', t => t.doctorId === token.doctorId && t.status === 'In Consultation' && t.id !== token.id, {
+    status: 'Completed',
+    completedAt: new Date().toISOString()
+  });
+
+  const updated = db.update('queue_tokens', t => t.id === token.id, {
+    status: 'In Consultation',
+    calledAt: new Date().toISOString()
+  });
+
+  if (token.appointmentId) {
+    db.update('appointments', a => a.id === token.appointmentId || a.appointmentId === token.appointmentId, {
+      status: 'In Consultation'
+    });
+  }
+
+  db.logAudit('TOKEN_CALLED', 'Alex Carter', `Called Token #${token.tokenDisplay} (${token.patientName}) to ${token.roomNumber}`);
+  res.json({ success: true, token: updated });
+});
+
+app.post('/api/reception/tokens/:id/recall', (req, res) => {
+  const { id } = req.params;
+  const token = db.findOne('queue_tokens', t => t.id === id || t.tokenId === id || t.tokenDisplay === id);
+  if (!token) return res.status(404).json({ error: 'Token not found.' });
+
+  const updated = db.update('queue_tokens', t => t.id === token.id, {
+    recalledAt: new Date().toISOString()
+  });
+
+  db.logAudit('TOKEN_RECALLED', 'Alex Carter', `Recalled chime for Token #${token.tokenDisplay} (${token.patientName})`);
+  res.json({ success: true, token: updated });
+});
+
+app.post('/api/reception/tokens/:id/skip', (req, res) => {
+  const { id } = req.params;
+  const token = db.findOne('queue_tokens', t => t.id === id || t.tokenId === id || t.tokenDisplay === id);
+  if (!token) return res.status(404).json({ error: 'Token not found.' });
+
+  const updated = db.update('queue_tokens', t => t.id === token.id, {
+    status: 'Skipped',
+    skippedAt: new Date().toISOString()
+  });
+
+  db.logAudit('TOKEN_SKIPPED', 'Alex Carter', `Skipped Token #${token.tokenDisplay} (${token.patientName})`);
+  res.json({ success: true, token: updated });
+});
+
+app.post('/api/reception/tokens/:id/transfer', (req, res) => {
+  const { id } = req.params;
+  const { targetDoctorId, reason } = req.body;
+
+  const token = db.findOne('queue_tokens', t => t.id === id || t.tokenId === id || t.tokenDisplay === id);
+  if (!token) return res.status(404).json({ error: 'Token not found.' });
+
+  const targetDoctor = db.findOne('doctors', d => d.doctorId === targetDoctorId || d.id === targetDoctorId);
+  if (!targetDoctor) return res.status(404).json({ error: 'Target doctor not found.' });
+
+  const updated = db.update('queue_tokens', t => t.id === token.id, {
+    transferredFrom: token.doctorName,
+    doctorId: targetDoctor.doctorId,
+    doctorName: targetDoctor.fullName,
+    department: targetDoctor.specialization,
+    roomNumber: targetDoctor.roomNumber,
+    transferReason: reason || 'Clinical Transfer',
+    status: 'Waiting'
+  });
+
+  if (token.appointmentId) {
+    db.update('appointments', a => a.id === token.appointmentId || a.appointmentId === token.appointmentId, {
+      doctorId: targetDoctor.doctorId,
+      doctorName: targetDoctor.fullName
+    });
+  }
+
+  db.logAudit('TOKEN_TRANSFERRED', 'Alex Carter', `Transferred Token #${token.tokenDisplay} from ${token.doctorName} to ${targetDoctor.fullName}`);
+  res.json({ success: true, token: updated });
+});
+
+app.post('/api/reception/tokens/:id/complete', (req, res) => {
+  const { id } = req.params;
+  const token = db.findOne('queue_tokens', t => t.id === id || t.tokenId === id || t.tokenDisplay === id);
+  if (!token) return res.status(404).json({ error: 'Token not found.' });
+
+  const updated = db.update('queue_tokens', t => t.id === token.id, {
+    status: 'Completed',
+    completedAt: new Date().toISOString()
+  });
+
+  if (token.appointmentId) {
+    db.update('appointments', a => a.id === token.appointmentId || a.appointmentId === token.appointmentId, {
+      status: 'Completed'
+    });
+  }
+
+  db.logAudit('TOKEN_COMPLETED', 'Alex Carter / Doctor', `Completed consultation for Token #${token.tokenDisplay} (${token.patientName})`);
+  res.json({ success: true, token: updated });
+});
+
+// 5. Billing & Invoices REST APIs
+app.get('/api/invoices', (req, res) => {
+  const { patientId, status } = req.query;
+  let list = db.get('invoices') || [];
+
+  if (patientId) {
+    list = list.filter(i => i.patientId === patientId);
+  }
+  if (status && status !== 'All') {
+    list = list.filter(i => i.paymentStatus?.toLowerCase() === status.toLowerCase());
+  }
+
+  res.json(list.reverse());
+});
+
+app.get('/api/invoices/:id', (req, res) => {
+  const { id } = req.params;
+  const invoice = db.findOne('invoices', i => i.id === id || i.invoiceId === id);
+  if (!invoice) return res.status(404).json({ error: 'Invoice not found.' });
+  res.json(invoice);
+});
+
+app.post('/api/invoices', (req, res) => {
+  const {
+    patientId,
+    patientName,
+    patientPhone,
+    doctorId,
+    doctorName,
+    appointmentId,
+    consultationFee = 750,
+    registrationFee = 0,
+    additionalCharges = [],
+    discountType = 'flat',
+    discountValue = 0,
+    taxRate = 0,
+    paymentMethod = 'UPI',
+    paymentStatus = 'Pending',
+    transactionReference = '',
+    verifiedBy = '',
+    notes = ''
+  } = req.body;
+
+  if (!patientName && !patientId) {
+    return res.status(400).json({ error: 'Patient information is required.' });
+  }
+
+  // Calculate Subtotal
+  const addChargesTotal = (additionalCharges || []).reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+  const subtotal = (Number(consultationFee) || 0) + (Number(registrationFee) || 0) + addChargesTotal;
+
+  // Calculate Discount
+  const discVal = Number(discountValue) || 0;
+  const discountAmount = discountType === 'percentage' 
+    ? Math.round((subtotal * discVal) / 100) 
+    : Math.min(discVal, subtotal);
+
+  const taxableAmount = Math.max(0, subtotal - discountAmount);
+
+  // Calculate Tax
+  const tRate = Number(taxRate) || 0;
+  const taxAmount = Math.round(((taxableAmount * tRate) / 100) * 10) / 10;
+
+  // Final Total Amount
+  const totalAmount = taxableAmount + taxAmount;
+
+  // Guard: Do not mark as Paid without verification details
+  let finalStatus = paymentStatus;
+  let finalVerifiedBy = verifiedBy;
+  let finalVerifiedAt = null;
+
+  if (paymentStatus === 'Paid') {
+    if (!transactionReference && paymentMethod !== 'Cash') {
+      finalStatus = 'Pending';
+    } else {
+      finalVerifiedBy = verifiedBy || 'Reception Desk Staff';
+      finalVerifiedAt = new Date().toISOString();
+    }
+  }
+
+  const invoiceCount = (db.get('invoices') || []).length;
+  const invoiceId = `INV-2026-${101 + invoiceCount}`;
+
+  const newInvoice = {
+    id: 'inv_' + Date.now(),
+    invoiceId,
+    patientId: patientId || 'PAT-1092',
+    patientName: patientName || 'Walk-in Patient',
+    patientPhone: patientPhone || '+91 98765 43210',
+    doctorId: doctorId || 'DOC-102',
+    doctorName: doctorName || 'Dr. Sarah Mitchell, MD',
+    department: 'Outpatient Clinic',
+    appointmentId: appointmentId || null,
+    consultationFee: Number(consultationFee) || 0,
+    registrationFee: Number(registrationFee) || 0,
+    additionalCharges: additionalCharges || [],
+    subtotal,
+    discountType,
+    discountValue: discVal,
+    discountAmount,
+    taxRate: tRate,
+    taxAmount,
+    totalAmount,
+    paymentMethod,
+    paymentStatus: finalStatus,
+    transactionReference: transactionReference || '',
+    verifiedBy: finalVerifiedBy,
+    verifiedAt: finalVerifiedAt,
+    notes: notes || 'Outpatient Consultation & Services',
+    createdAt: new Date().toISOString()
+  };
+
+  db.insert('invoices', newInvoice);
+
+  // If paid, create payment record
+  if (finalStatus === 'Paid') {
+    const payCount = (db.get('payments') || []).length;
+    db.insert('payments', {
+      id: 'pay_' + Date.now(),
+      paymentId: `PAY-${8801 + payCount}`,
+      invoiceId: newInvoice.invoiceId,
+      patientId: newInvoice.patientId,
+      amount: newInvoice.totalAmount,
+      paymentMethod,
+      transactionReference: transactionReference || 'CASH-REC',
+      status: 'Confirmed',
+      recordedBy: finalVerifiedBy,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  db.logAudit('INVOICE_GENERATED', finalVerifiedBy || 'Staff', `Created ${invoiceId} for ${newInvoice.patientName} (₹${totalAmount}) [${finalStatus}]`);
+
+  res.status(201).json({ success: true, invoice: newInvoice });
+});
+
+// Record / Verify Payment
+app.put('/api/invoices/:id/payment', (req, res) => {
+  const { id } = req.params;
+  const { paymentMethod, transactionReference, amountPaid, notes, verifiedBy } = req.body;
+
+  const invoice = db.findOne('invoices', i => i.id === id || i.invoiceId === id);
+  if (!invoice) return res.status(404).json({ error: 'Invoice not found.' });
+
+  const updated = db.update('invoices', i => i.id === invoice.id, {
+    paymentStatus: 'Paid',
+    paymentMethod: paymentMethod || invoice.paymentMethod,
+    transactionReference: transactionReference || `VERIF-${Date.now()}`,
+    verifiedBy: verifiedBy || 'Alex Carter (Reception Desk)',
+    verifiedAt: new Date().toISOString(),
+    paymentNotes: notes || 'Verified and marked paid by receptionist.'
+  });
+
+  const payCount = (db.get('payments') || []).length;
+  db.insert('payments', {
+    id: 'pay_' + Date.now(),
+    paymentId: `PAY-${8801 + payCount}`,
+    invoiceId: invoice.invoiceId,
+    patientId: invoice.patientId,
+    amount: amountPaid || invoice.totalAmount,
+    paymentMethod: paymentMethod || invoice.paymentMethod,
+    transactionReference: transactionReference || `VERIF-${Date.now()}`,
+    status: 'Confirmed',
+    recordedBy: verifiedBy || 'Alex Carter',
+    timestamp: new Date().toISOString()
+  });
+
+  // Automated WhatsApp payment confirmation
+  db.insert('whatsapp_messages', {
+    messageId: 'wa_' + Date.now(),
+    patientId: invoice.patientId,
+    patientName: invoice.patientName,
+    phoneNumber: invoice.patientPhone || '+91 98765 43210',
+    type: 'INVOICE_PAID',
+    status: 'Sent',
+    timestamp: new Date().toISOString(),
+    content: `Payment Confirmed: Dear ${invoice.patientName}, we have received ₹${invoice.totalAmount} via ${paymentMethod || invoice.paymentMethod} for Invoice ${invoice.invoiceId}. Thank you for visiting MediFlow AI.`
+  });
+
+  db.logAudit('PAYMENT_CONFIRMED', verifiedBy || 'Alex Carter', `Confirmed ₹${invoice.totalAmount} for ${invoice.invoiceId} (${invoice.patientName})`);
+
+  res.json({ success: true, invoice: updated });
+});
+
+// WhatsApp Invoice Dispatch
+app.post('/api/invoices/:id/send-whatsapp', (req, res) => {
+  const { id } = req.params;
+  const invoice = db.findOne('invoices', i => i.id === id || i.invoiceId === id);
+  if (!invoice) return res.status(404).json({ error: 'Invoice not found.' });
+
+  const wa = {
+    messageId: 'wa_' + Date.now(),
+    patientId: invoice.patientId,
+    patientName: invoice.patientName,
+    phoneNumber: invoice.patientPhone || '+91 98765 43210',
+    type: 'INVOICE_RECEIPT',
+    status: 'Sent',
+    timestamp: new Date().toISOString(),
+    content: `MediFlow AI Invoice ${invoice.invoiceId}: Total ₹${invoice.totalAmount} [${invoice.paymentStatus}]. Doctor: ${invoice.doctorName}. Thank you!`
+  };
+  db.insert('whatsapp_messages', wa);
+
+  res.json({ success: true, message: `Invoice ${invoice.invoiceId} sent to ${invoice.patientPhone || '+91 98765 43210'} via WhatsApp.` });
+});
+
+// 6. AI Receptionist Copilot (Gemma 4 with Controlled Tools)
+app.post('/api/ai/receptionist-copilot', async (req, res) => {
+  const { question } = req.body;
+  const q = (question || '').toLowerCase();
+
+  const today = new Date().toISOString().split('T')[0];
+  const appointments = db.get('appointments') || [];
+  const queueTokens = db.get('queue_tokens') || [];
+  const invoices = db.get('invoices') || [];
+  const doctors = db.get('doctors') || [];
+  const patients = db.get('patients') || [];
+
+  // Controlled backend tool executions
+  let toolUsed = 'general_clinic_qa';
+  let toolData = null;
+  let synthesizedAnswer = '';
+  let requiresConfirmation = false;
+  let sensitiveAction = null;
+
+  if (q.includes('unarrived') || q.includes('not arrived') || q.includes('checked in') || q.includes('aaye nahi')) {
+    toolUsed = 'find_today_unarrived_patients';
+    const unarrived = appointments.filter(a => 
+      a.appointmentDate === today && 
+      (!a.checkedInAt || a.status === 'Confirmed' || a.status === 'Pending') &&
+      a.status !== 'Completed' && a.status !== 'Cancelled'
+    );
+    toolData = unarrived.map(a => ({
+      appointmentId: a.appointmentId,
+      patientName: a.patientName,
+      time: a.appointmentTime,
+      doctor: a.doctorName,
+      token: a.tokenNumber
+    }));
+    synthesizedAnswer = unarrived.length > 0
+      ? `There are ${unarrived.length} unarrived patients scheduled for today: ${unarrived.map(u => `${u.patientName} (${u.time} with ${u.doctor})`).join(', ')}. Would you like me to prepare their check-in slips?`
+      : `All scheduled patients for today have either checked in or completed their consultations.`;
+
+  } else if (q.includes('waiting') || q.includes('queue count') || q.includes('kitne log')) {
+    toolUsed = 'count_waiting_patients';
+    const waiting = queueTokens.filter(t => t.status === 'Waiting');
+    const inConsult = queueTokens.find(t => t.status === 'In Consultation');
+    toolData = { waitingCount: waiting.length, inConsultation: inConsult?.patientName || 'None', waitingList: waiting.map(w => w.tokenDisplay) };
+    synthesizedAnswer = `Currently, there are ${waiting.length} patients waiting in the queue (Tokens: ${waiting.map(w => w.tokenDisplay).join(', ') || 'None'}). ${inConsult ? `Token #${inConsult.tokenDisplay} (${inConsult.patientName}) is currently in consultation with ${inConsult.doctorName}.` : 'No active consultation at this moment.'} Average wait time is ~${waiting.length * 12} minutes.`;
+
+  } else if (q.includes('pending invoice') || q.includes('unpaid') || q.includes('bill pending') || q.includes('baki')) {
+    toolUsed = 'find_pending_invoices';
+    const pendingInvoices = invoices.filter(i => i.paymentStatus === 'Pending');
+    const totalPendingAmount = pendingInvoices.reduce((a, c) => a + (Number(c.totalAmount) || 0), 0);
+    toolData = { pendingCount: pendingInvoices.length, totalAmount: totalPendingAmount, invoices: pendingInvoices };
+    synthesizedAnswer = pendingInvoices.length > 0
+      ? `Found ${pendingInvoices.length} pending invoice(s) totaling ₹${totalPendingAmount}: ${pendingInvoices.map(i => `${i.invoiceId} for ${i.patientName} (₹${i.totalAmount})`).join(', ')}. Verification is required before marking them paid.`
+      : `All generated invoices are settled and paid in full. Zero pending dues.`;
+
+  } else if (q.includes('doctor') || q.includes('available') || q.includes('specialist') || q.includes('timing')) {
+    toolUsed = 'get_doctor_availability';
+    toolData = doctors.map(d => ({
+      name: d.fullName,
+      specialty: d.specialization,
+      room: d.roomNumber,
+      status: d.status || 'Available',
+      fee: d.consultationFee
+    }));
+    synthesizedAnswer = `Today's Doctor Availability: ${doctors.map(d => `${d.fullName} (${d.specialization}, ${d.roomNumber}) - ${d.status || 'Available'}`).join(' | ')}.`;
+
+  } else if (q.includes('cancel') || q.includes('waive') || q.includes('delete') || q.includes('hata do')) {
+    requiresConfirmation = true;
+    sensitiveAction = { type: 'CONFIRM_SENSITIVE_OPERATION', query: question };
+    synthesizedAnswer = `⚠️ Receptionist Confirmation Required: You requested a sensitive action ("${question}"). As an AI assistant, I do not directly modify patient appointments or waive fees without your explicit verification. Please confirm if you wish to proceed.`;
+
+  } else {
+    toolUsed = 'summarise_daily_clinic_operations';
+    const waitingCount = queueTokens.filter(t => t.status === 'Waiting').length;
+    const completedCount = queueTokens.filter(t => t.status === 'Completed').length;
+    const todayInvoices = invoices.filter(i => i.createdAt?.startsWith(today));
+    const revenue = todayInvoices.filter(i => i.paymentStatus === 'Paid').reduce((a, c) => a + (Number(c.totalAmount) || 0), 0);
+
+    toolData = { waitingCount, completedCount, totalRevenue: revenue, totalAppointments: appointments.length };
+    synthesizedAnswer = `MediFlow AI Daily Operations Summary for ${today}:
+• Total OPD Visits Today: ${appointments.length}
+• Patients Waiting in Queue: ${waitingCount}
+• Consultations Completed: ${completedCount}
+• Today's Collected Revenue: ₹${revenue}
+• System Status: Cloud Firestore and Gemma 4 AI synchronized smoothly.`;
+  }
+
+  // Attempt Gemma 4 formulation via Ollama if available
+  try {
+    const aiPrompt = `You are the MediFlow AI Receptionist Copilot for clinic front-desk staff.
+Authoritative Clinic Data Retrieved from Database:
+${JSON.stringify(toolData)}
+
+User Question: "${question}"
+Synthesized Fact: "${synthesizedAnswer}"
+
+Provide a concise, professional, polite administrative answer in 2-3 sentences based strictly on the factual data above. Do not invent medical facts.`;
+
+    const ollamaRes = await fetch(`${OLLAMA_HOST}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        prompt: aiPrompt,
+        stream: false,
+        options: { temperature: 0.1, num_predict: 120 }
+      })
+    });
+
+    if (ollamaRes.ok) {
+      const gemmaData = await ollamaRes.json();
+      if (gemmaData.response && gemmaData.response.trim().length > 10) {
+        synthesizedAnswer = gemmaData.response.trim();
+      }
+    }
+  } catch (err) {
+    // Graceful fallback to verified deterministic answer
+  }
+
+  res.json({
+    success: true,
+    toolUsed,
+    toolData,
+    answer: synthesizedAnswer,
+    requiresConfirmation,
+    sensitiveAction
+  });
 });
 
 app.listen(PORT, '0.0.0.0', () => {

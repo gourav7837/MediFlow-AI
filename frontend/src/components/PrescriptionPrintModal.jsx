@@ -189,3 +189,4 @@ export const PrescriptionPrintModal = ({ prescription, onClose }) => {
     </div>
   );
 };
+

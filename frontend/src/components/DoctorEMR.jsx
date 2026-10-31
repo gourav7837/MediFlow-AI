@@ -24,25 +24,24 @@ import { useAuth } from '../context/AuthContext';
 
 export const DoctorEMR = () => {
   const { appointments, updateTokenStatus, savePrescriptionRecord } = useClinic();
-  const { switchDemoRole } = useAuth();
+  const { currentUser } = useAuth();
+  const currentDoctorName = currentUser?.displayName || 'Physician';
 
   // Find active consultation patient or fallback to first waiting
   const activeConsultation = appointments.find(a => a.status === 'In Consultation');
-  const [selectedPatientId, setSelectedPatientId] = useState(activeConsultation?.patientId || 'PAT-1092');
+  const [selectedPatientId, setSelectedPatientId] = useState(activeConsultation?.patientId || appointments[0]?.patientId || '');
 
   const selectedPatient = appointments.find(a => a.patientId === selectedPatientId) || appointments[0] || {
-    tokenDisplay: 'A34',
-    patientName: 'Rahul Sharma',
-    patientId: 'PAT-1092',
-    age: 34,
-    gender: 'Male',
-    allergies: ['Penicillin']
+    tokenDisplay: '—',
+    patientName: 'No Patient Selected',
+    patientId: '—',
+    age: '',
+    gender: '—',
+    allergies: []
   };
 
   // FR-3.1: Shorthand messy notes input state
-  const [rawNotes, setRawNotes] = useState(
-    'patient Rahul 34M has 101 fever, dry cough for 3 days, bp normal 120/80, pulse 82, spo2 98%. throat mildly congested. known penicillin allergy! prescribe paracetamol 650mg tds 3 days, azithromycin 500mg od 3 days, advise plenty of fluids and warm salt water gargle.'
-  );
+  const [rawNotes, setRawNotes] = useState('');
 
   // FR-3.2 & FR-3.3: Parsing state and structured result
   const [loading, setLoading] = useState(false);
@@ -51,28 +50,25 @@ export const DoctorEMR = () => {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
 
-  // Sample prompt buttons for 1-click hackathon demoing
+  // Standard clinical prompt templates
   const demoSnippets = [
     {
-      label: 'Fever & Cough (Rahul Sharma - #A34)',
-      text: '34yo male Rahul Sharma. 101 fever, dry cough for 3 days, bp normal 120/80, pulse 82, spo2 98%. allergic to penicillin. rx paracetamol 650mg tds 3d after food, azithromycin 500mg od 3d, warm saline gargle.',
-      patientId: 'PAT-1092'
+      label: 'URTI / Acute Fever',
+      text: 'Patient has 101 fever, dry cough for 3 days, bp 120/80, pulse 82, spo2 98%. throat mildly congested. prescribe paracetamol 650mg tds 3 days, azithromycin 500mg od 3 days, advise plenty of fluids and warm salt water gargle.'
     },
     {
-      label: 'Knee Pain / OA (Priya Patel - #A35)',
-      text: 'Priya Patel 45F, complaints of bilateral knee pain, morning stiffness 2 wks. bp 130/85, pulse 76, spo2 99%. mild crepitus right knee. probable osteoarthritis. prescribe naproxen 250mg bid 5 days post meal, cap omeprazole 20mg od empty stomach 7 days. avoid squatting.',
-      patientId: 'PAT-1093'
+      label: 'Joint Pain / Osteoarthritis',
+      text: 'Complaints of bilateral knee pain, morning stiffness 2 wks. bp 130/85, pulse 76, spo2 99%. mild crepitus right knee. prescribe naproxen 250mg bid 5 days post meal, cap omeprazole 20mg od empty stomach 7 days.'
     },
     {
-      label: 'Diabetes & Routine (Amit Kumar - #A36)',
-      text: 'Amit Kumar 28M, routine health review. BP 124/82, pulse 74, temp 98.4F. blood sugar fasting 140. prescribe metformin 500mg bd with meals 30 days, multivitamin od 15 days. advice 30 min brisk walk daily.',
-      patientId: 'PAT-1094'
+      label: 'Hypertension & Diabetes Follow-up',
+      text: 'Routine health review. BP 124/82, pulse 74, temp 98.4F. blood sugar fasting 140. prescribe metformin 500mg bd with meals 30 days, advice 30 min brisk walk daily.'
     }
   ];
 
   const handleApplySnippet = (snippet) => {
     setRawNotes(snippet.text);
-    setSelectedPatientId(snippet.patientId);
+    if (snippet.patientId) setSelectedPatientId(snippet.patientId);
   };
 
   // Client-side clinical heuristic parser for zero-crash fallback
@@ -210,7 +206,7 @@ export const DoctorEMR = () => {
       patientId: selectedPatient.patientId,
       patientName: selectedPatient.patientName,
       tokenNumber: selectedPatient.tokenDisplay,
-      doctorName: 'Dr. Sarah Mitchell, MD',
+      doctorName: currentDoctorName,
       rawNotes: rawNotes,
       chiefComplaints: parsedEMR.chiefComplaints,
       vitals: parsedEMR.vitals,
@@ -428,7 +424,7 @@ export const DoctorEMR = () => {
           {/* Printable Clinic Letterhead */}
           <div className="hidden print:block border-b-2 border-teal-700 pb-3 mb-4">
             <h1 className="text-xl font-bold text-teal-800">MediFlow AI Clinic Center</h1>
-            <p className="text-xs text-slate-600">Dr. Sarah Mitchell, MD • Internal Medicine & General Practice</p>
+            <p className="text-xs text-slate-600">{currentDoctorName} • General Practice</p>
             <p className="text-xs text-slate-500">Date: {new Date().toLocaleDateString()} | Token: #{selectedPatient.tokenDisplay}</p>
           </div>
 

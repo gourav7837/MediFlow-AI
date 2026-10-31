@@ -14,8 +14,6 @@ import {
 import { useAuth, MOCK_PROFILES } from '../context/AuthContext';
 
 export const AuthModal = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
   const { currentUser, switchDemoRole, login, register, logout, authError, isRealFirebase } = useAuth();
   const [tab, setTab] = useState('demo'); // 'demo' | 'login' | 'register'
   const [email, setEmail] = useState('');
@@ -24,6 +22,10 @@ export const AuthModal = ({ isOpen, onClose }) => {
   const [role, setRole] = useState('doctor');
   const [submitting, setSubmitting] = useState(false);
   const [localMessage, setLocalMessage] = useState('');
+
+  if (!isOpen) return null;
+
+  const activeRole = currentUser?.role;
 
   const handleDemoSelect = (roleKey) => {
     switchDemoRole(roleKey);
@@ -139,7 +141,7 @@ export const AuthModal = ({ isOpen, onClose }) => {
                 type="button"
                 onClick={() => handleDemoSelect('doctor')}
                 className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between ${
-                  currentUser.role === 'doctor'
+                  currentUser && activeRole === 'doctor'
                     ? 'border-teal-500 bg-teal-50/60 ring-2 ring-teal-400/20 shadow-sm'
                     : 'border-slate-200 hover:border-teal-300 hover:bg-slate-50'
                 }`}
@@ -165,7 +167,7 @@ export const AuthModal = ({ isOpen, onClose }) => {
                 type="button"
                 onClick={() => handleDemoSelect('receptionist')}
                 className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between ${
-                  currentUser.role === 'receptionist'
+                  currentUser && activeRole === 'receptionist'
                     ? 'border-teal-500 bg-teal-50/60 ring-2 ring-teal-400/20 shadow-sm'
                     : 'border-slate-200 hover:border-teal-300 hover:bg-slate-50'
                 }`}
@@ -191,7 +193,7 @@ export const AuthModal = ({ isOpen, onClose }) => {
                 type="button"
                 onClick={() => handleDemoSelect('patient')}
                 className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between ${
-                  currentUser.role === 'patient'
+                  currentUser && activeRole === 'patient'
                     ? 'border-teal-500 bg-teal-50/60 ring-2 ring-teal-400/20 shadow-sm'
                     : 'border-slate-200 hover:border-teal-300 hover:bg-slate-50'
                 }`}

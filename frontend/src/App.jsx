@@ -30,16 +30,20 @@ import {
   MessageSquare,
   Users,
   Calendar,
-  Sparkles
+  Sparkles,
+  ClipboardList,
+  ShieldCheck,
+  Bot
 } from 'lucide-react';
 
 const MainLayout = () => {
   const { currentUser } = useAuth();
 
-  // Route depending on user role
+  // Route strictly depending on user role
   const getDefaultTab = () => {
     if (currentUser?.role === 'doctor') return 'doctor-dashboard';
     if (currentUser?.role === 'patient') return 'patient-portal';
+    if (currentUser?.role === 'receptionist') return 'queue-tokens';
     return 'dashboard';
   };
 
@@ -48,14 +52,26 @@ const MainLayout = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
-  // Sync tab if user role changes
+  // Enforce strict role-based access control
   useEffect(() => {
-    if (currentUser?.role === 'doctor' && activeTab === 'dashboard') {
-      setActiveTab('doctor-dashboard');
-    } else if (currentUser?.role === 'patient' && activeTab === 'dashboard') {
-      setActiveTab('patient-portal');
+    const role = currentUser?.role;
+    if (role === 'doctor') {
+      const allowedDoctorTabs = ['doctor-dashboard', 'clinical-copilot', 'medical-reports', 'appointments', 'patients'];
+      if (!allowedDoctorTabs.includes(activeTab)) {
+        setActiveTab('doctor-dashboard');
+      }
+    } else if (role === 'patient') {
+      const allowedPatientTabs = ['patient-portal', 'patient-assistant'];
+      if (!allowedPatientTabs.includes(activeTab)) {
+        setActiveTab('patient-portal');
+      }
+    } else if (role === 'receptionist') {
+      const allowedReceptionTabs = ['queue-tokens', 'appointments', 'patients', 'voice-agent', 'whatsapp'];
+      if (!allowedReceptionTabs.includes(activeTab)) {
+        setActiveTab('queue-tokens');
+      }
     }
-  }, [currentUser?.role]);
+  }, [currentUser?.role, activeTab]);
 
   // Modal triggers from topbar
   const [openBookModal, setOpenBookModal] = useState(false);
@@ -76,6 +92,7 @@ const MainLayout = () => {
   };
 
   const handleQuickRegister = () => {
+    if (currentUser.role === 'patient') return;
     setActiveTab('patients');
     setOpenRegisterModal(true);
   };
@@ -83,9 +100,34 @@ const MainLayout = () => {
   const handleSearchGlobal = (query) => {
     if (!query) return;
     const q = query.toLowerCase();
+    const role = currentUser.role;
+
+    if (role === 'patient') {
+      if (q.includes('assistant') || q.includes('chat') || q.includes('ai') || q.includes('help')) {
+        setActiveTab('patient-assistant');
+      } else {
+        setActiveTab('patient-portal');
+      }
+      return;
+    }
+
+    if (role === 'doctor') {
+      if (q.includes('copilot') || q.includes('ai') || q.includes('emr')) {
+        setActiveTab('clinical-copilot');
+      } else if (q.includes('report') || q.includes('lab') || q.includes('scan')) {
+        setActiveTab('medical-reports');
+      } else if (q.includes('appointment')) {
+        setActiveTab('appointments');
+      } else {
+        setActiveTab('doctor-dashboard');
+      }
+      return;
+    }
+
+    // Admin / Receptionist global navigation
     if (q.includes('voice')) {
       setActiveTab('voice-agent');
-    } else if (q.includes('doctor') || q.includes('clinical') || q.includes('emr')) {
+    } else if (q.includes('doctor') || q.includes('clinical')) {
       setActiveTab('doctor-dashboard');
     } else if (q.includes('patient') || q.includes('portal')) {
       setActiveTab('patient-portal');
@@ -95,8 +137,6 @@ const MainLayout = () => {
       setActiveTab('clinical-copilot');
     } else if (q.includes('whatsapp') || q.includes('message')) {
       setActiveTab('whatsapp');
-    } else if (q.includes('assistant') || q.includes('faq')) {
-      setActiveTab('patient-assistant');
     } else if (q.includes('queue') || q.includes('token')) {
       setActiveTab('queue-tokens');
     }
@@ -130,8 +170,8 @@ const MainLayout = () => {
         {/* Dynamic Page Views */}
         <main className="flex-1 p-6 sm:p-8 max-w-7xl w-full mx-auto pb-32">
           
-          {/* WORKSPACE 1: DOCTOR DASHBOARD & 3-COLUMN PATIENT WORKSPACE */}
-          {activeTab === 'doctor-dashboard' && (
+          {/* WORKSPACE 1: DOCTOR CLINICAL WORKSPACE */}
+          {activeTab === 'doctor-dashboard' && currentUser?.role !== 'patient' && (
             selectedPatientWorkspace ? (
               <DoctorPatientWorkspace 
                 patientId={selectedPatientWorkspace.patientId}
@@ -153,7 +193,7 @@ const MainLayout = () => {
           )}
 
           {/* WORKSPACE 3: CLINIC ADMIN WORKSPACE */}
-          {activeTab === 'dashboard' && (
+          {activeTab === 'dashboard' && currentUser?.role === 'admin' && (
             <AdminDashboard 
               onNavigate={(tab) => setActiveTab(tab)}
               onOpenBook={handleQuickBook}
@@ -161,119 +201,243 @@ const MainLayout = () => {
             />
           )}
 
-          {activeTab === 'voice-agent' && (
+          {activeTab === 'voice-agent' && (currentUser?.role === 'admin' || currentUser?.role === 'receptionist') && (
             <VoiceReceptionist />
           )}
 
           {activeTab === 'patient-assistant' && (
-            <PatientAssistant onBookClick={() => setActiveTab('appointments')} />
+            <PatientAssistant onBookClick={() => setActiveTab('patient-portal')} />
           )}
 
-          {activeTab === 'patients' && (
+          {activeTab === 'patients' && currentUser?.role !== 'patient' && (
             <PatientManagement 
               initialRegisterOpen={openRegisterModal} 
               onNavigate={(tab) => setActiveTab(tab)}
             />
           )}
 
-          {activeTab === 'appointments' && (
+          {activeTab === 'appointments' && currentUser?.role !== 'patient' && (
             <AppointmentManagement initialBookOpen={openBookModal} />
           )}
 
-          {activeTab === 'doctors' && (
+          {activeTab === 'doctors' && currentUser?.role === 'admin' && (
             <DoctorManagement onOpenCopilot={() => setActiveTab('clinical-copilot')} />
           )}
 
-          {activeTab === 'clinical-copilot' && (
+          {activeTab === 'clinical-copilot' && (currentUser?.role === 'doctor' || currentUser?.role === 'admin') && (
             <ClinicalCopilot />
           )}
 
-          {activeTab === 'medical-reports' && (
+          {activeTab === 'medical-reports' && currentUser?.role !== 'patient' && (
             <MedicalReportAnalysis />
           )}
 
-          {activeTab === 'whatsapp' && (
+          {activeTab === 'whatsapp' && (currentUser?.role === 'admin' || currentUser?.role === 'receptionist') && (
             <WhatsAppDashboard />
           )}
 
-          {activeTab === 'queue-tokens' && (
+          {activeTab === 'queue-tokens' && currentUser?.role !== 'patient' && (
             <ReceptionistQueue />
           )}
 
-          {activeTab === 'settings' && (
+          {activeTab === 'settings' && currentUser?.role === 'admin' && (
             <SettingsView />
           )}
         </main>
 
-        {/* Persistent Floating Demo Dock for Instant Judge Navigation */}
-        <aside className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-md text-white px-3 py-2 rounded-2xl shadow-2xl border border-slate-700/60 flex items-center space-x-1.5 no-print max-w-[95vw] overflow-x-auto">
-          <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider px-2 hidden lg:inline">
-            Workspace:
-          </span>
+        {/* ROLE-SPECIFIC QUICK NAVIGATION DOCKS */}
+        
+        {/* 1. Doctor Workspace Quick Dock */}
+        {currentUser?.role === 'doctor' && (
+          <aside className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-md text-white px-3 py-2 rounded-2xl shadow-2xl border border-blue-500/30 flex items-center space-x-1.5 no-print max-w-[95vw] overflow-x-auto">
+            <span className="text-[11px] font-bold text-blue-400 uppercase tracking-wider px-2 hidden sm:inline">
+              Doctor Suite:
+            </span>
 
-          <button
-            onClick={() => {
-              setActiveTab('doctor-dashboard');
-              setSelectedPatientWorkspace(null);
-            }}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-              activeTab === 'doctor-dashboard' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <Stethoscope className="w-3.5 h-3.5 text-blue-400" />
-            <span>Doctor Workspace 🩺</span>
-          </button>
+            <button
+              onClick={() => {
+                setActiveTab('doctor-dashboard');
+                setSelectedPatientWorkspace(null);
+              }}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'doctor-dashboard' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Stethoscope className="w-3.5 h-3.5 text-blue-400" />
+              <span>Today's Queue 🩺</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('patient-portal')}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-              activeTab === 'patient-portal' ? 'bg-teal-600 text-white shadow-md' : 'text-teal-300 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <HeartPulse className="w-3.5 h-3.5 text-teal-400" />
-            <span>Patient Portal 🧑</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('clinical-copilot')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'clinical-copilot' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <BrainCircuit className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Clinical Copilot ✨</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-              activeTab === 'dashboard' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            <span>Admin</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('medical-reports')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'medical-reports' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5 text-amber-400" />
+              <span>Lab Reports 📄</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('voice-agent')}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-              activeTab === 'voice-agent' ? 'bg-blue-600 text-white shadow-md' : 'text-cyan-300 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <Mic className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-            <span>AI Voice ⭐</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('appointments')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'appointments' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Appointments</span>
+            </button>
+          </aside>
+        )}
 
-          <button
-            onClick={() => setActiveTab('medical-reports')}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-              activeTab === 'medical-reports' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5 text-amber-400" />
-            <span>MediScan</span>
-          </button>
+        {/* 2. Patient Health Portal Quick Dock */}
+        {currentUser?.role === 'patient' && (
+          <aside className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-md text-white px-3 py-2 rounded-2xl shadow-2xl border border-emerald-500/30 flex items-center space-x-1.5 no-print max-w-[95vw] overflow-x-auto">
+            <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider px-2 hidden sm:inline">
+              Patient Portal:
+            </span>
 
-          <button
-            onClick={() => setActiveTab('whatsapp')}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-              activeTab === 'whatsapp' ? 'bg-emerald-600 text-white shadow-md' : 'text-emerald-300 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-            <span>WhatsApp</span>
-          </button>
-        </aside>
+            <button
+              onClick={() => setActiveTab('patient-portal')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'patient-portal' ? 'bg-emerald-600 text-white shadow-md' : 'text-emerald-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <HeartPulse className="w-3.5 h-3.5 text-emerald-400" />
+              <span>My Health Portal 🧑</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('patient-assistant')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'patient-assistant' ? 'bg-emerald-600 text-white shadow-md' : 'text-emerald-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Bot className="w-3.5 h-3.5 text-cyan-400" />
+              <span>AI Health Assistant 🤖</span>
+            </button>
+          </aside>
+        )}
+
+        {/* 3. Receptionist Quick Dock */}
+        {currentUser?.role === 'receptionist' && (
+          <aside className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-md text-white px-3 py-2 rounded-2xl shadow-2xl border border-amber-500/30 flex items-center space-x-1.5 no-print max-w-[95vw] overflow-x-auto">
+            <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider px-2 hidden sm:inline">
+              Front Desk:
+            </span>
+
+            <button
+              onClick={() => setActiveTab('queue-tokens')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'queue-tokens' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <ClipboardList className="w-3.5 h-3.5 text-amber-400" />
+              <span>OPD Queue Tokens</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('appointments')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'appointments' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5 text-blue-400" />
+              <span>Appointments</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('patients')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'patients' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Patients</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('voice-agent')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'voice-agent' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Mic className="w-3.5 h-3.5 text-cyan-400" />
+              <span>AI Voice</span>
+            </button>
+          </aside>
+        )}
+
+        {/* 4. Admin Quick Dock */}
+        {currentUser?.role === 'admin' && (
+          <aside className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-md text-white px-3 py-2 rounded-2xl shadow-2xl border border-purple-500/30 flex items-center space-x-1.5 no-print max-w-[95vw] overflow-x-auto">
+            <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider px-2 hidden lg:inline">
+              Admin Ops:
+            </span>
+
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'dashboard' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span>Admin Overview</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab('doctor-dashboard');
+                setSelectedPatientWorkspace(null);
+              }}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'doctor-dashboard' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Stethoscope className="w-3.5 h-3.5 text-blue-400" />
+              <span>Doctor Suite 🩺</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('patient-portal')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'patient-portal' ? 'bg-emerald-600 text-white shadow-md' : 'text-emerald-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <HeartPulse className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Patient Portal 🧑</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('queue-tokens')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'queue-tokens' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <ClipboardList className="w-3.5 h-3.5 text-amber-400" />
+              <span>Queue Tokens</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('voice-agent')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                activeTab === 'voice-agent' ? 'bg-blue-600 text-white shadow-md' : 'text-cyan-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Mic className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+              <span>AI Voice ⭐</span>
+            </button>
+          </aside>
+        )}
 
       </div>
 

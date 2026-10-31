@@ -98,8 +98,26 @@ export const DoctorManagement = ({ onOpenCopilot }) => {
       </div>
 
       {/* Doctor Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {doctors.map((doc) => (
+      {doctors.length === 0 ? (
+        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-sm space-y-3">
+          <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+            <Stethoscope className="w-8 h-8" />
+          </div>
+          <h3 className="text-base font-extrabold text-slate-800">No Doctors Registered Yet</h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
+            Your clinic roster is currently clean. Click <span className="font-bold text-blue-600">"Add New Doctor"</span> above to add a physician, or have clinicians register directly via the Doctor Portal.
+          </p>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="inline-flex items-center space-x-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all mt-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add First Doctor</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {doctors.map((doc) => (
           <div key={doc.id} className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-4 hover:border-blue-300 transition-all">
             <div className="space-y-3">
               <div className="flex items-start justify-between">
@@ -160,7 +178,8 @@ export const DoctorManagement = ({ onOpenCopilot }) => {
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      )}
 
       {/* MODAL: Add Doctor */}
       {isAddModalOpen && (

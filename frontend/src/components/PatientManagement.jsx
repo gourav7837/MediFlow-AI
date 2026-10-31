@@ -168,52 +168,64 @@ export const PatientManagement = ({ initialRegisterOpen = false, onNavigate }) =
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {patients.map((pat) => (
-                <tr key={pat.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-3.5 px-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 font-extrabold flex items-center justify-center text-xs">
-                        {pat.fullName.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <h3 className="font-extrabold text-slate-900 text-xs">{pat.fullName}</h3>
-                        <p className="text-[11px] text-slate-500">{pat.patientId} • {pat.age}y / {pat.gender}</p>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="text-slate-700">
-                      <p className="font-semibold">{pat.phoneNumber}</p>
-                      <p className="text-[11px] text-slate-400">{pat.email || 'No email recorded'}</p>
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    {pat.allergies && pat.allergies[0] !== 'None reported' ? (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
-                        ⚠️ {pat.allergies.join(', ')}
-                      </span>
-                    ) : (
-                      <span className="text-[11px] text-slate-400">No known allergies</span>
-                    )}
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <p className="text-slate-600 truncate max-w-xs">{pat.relevantMedicalHistory || 'Routine checkups only'}</p>
-                  </td>
-
-                  <td className="py-3.5 px-4 text-right">
-                    <button
-                      onClick={() => handleOpenProfile(pat.patientId)}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-bold text-xs transition-all inline-flex items-center space-x-1"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>View Full Profile</span>
-                    </button>
+              {patients.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="py-12 text-center text-slate-400">
+                    <Users className="w-10 h-10 mx-auto mb-2 text-slate-300" />
+                    <p className="font-bold text-slate-600 text-sm">No Patients Registered Yet</p>
+                    <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                      Click <span className="font-bold text-blue-600">"Register New Patient"</span> above to add a patient or have them register via the Patient Portal.
+                    </p>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                patients.map((pat) => (
+                  <tr key={pat.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 font-extrabold flex items-center justify-center text-xs">
+                          {pat.fullName.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div>
+                          <h3 className="font-extrabold text-slate-900 text-xs">{pat.fullName}</h3>
+                          <p className="text-[11px] text-slate-500">{pat.patientId} • {pat.age ? `${pat.age}y` : ''} {pat.gender}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <div className="text-slate-700">
+                        <p className="font-semibold">{pat.phoneNumber || 'No phone recorded'}</p>
+                        <p className="text-[11px] text-slate-400">{pat.email || 'No email recorded'}</p>
+                      </div>
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      {pat.allergies && Array.isArray(pat.allergies) && pat.allergies.length > 0 && pat.allergies[0] !== 'None reported' ? (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
+                          ⚠️ {pat.allergies.join(', ')}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-slate-400">No known allergies</span>
+                      )}
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <p className="text-slate-600 truncate max-w-xs">{pat.relevantMedicalHistory || 'Routine checkups only'}</p>
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right">
+                      <button
+                        onClick={() => handleOpenProfile(pat.patientId)}
+                        className="px-3 py-1.5 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-bold text-xs transition-all inline-flex items-center space-x-1"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View Full Profile</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

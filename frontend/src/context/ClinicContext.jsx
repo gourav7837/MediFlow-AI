@@ -15,162 +15,49 @@ import {
 
 const ClinicContext = createContext();
 
-// Initial sample data strictly adhering to PRD Firestore schema (Section 5)
-const INITIAL_PATIENTS = [
-  {
-    patientId: 'PAT-1092',
-    fullName: 'Rahul Sharma',
-    age: 34,
-    gender: 'Male',
-    contact: '+91 98765 43210',
-    allergies: ['Penicillin']
-  },
-  {
-    patientId: 'PAT-1093',
-    fullName: 'Priya Patel',
-    age: 45,
-    gender: 'Female',
-    contact: '+91 98123 45678',
-    allergies: ['Sulfa Drugs']
-  },
-  {
-    patientId: 'PAT-1094',
-    fullName: 'Amit Kumar',
-    age: 28,
-    gender: 'Male',
-    contact: '+91 97654 32109',
-    allergies: ['None reported']
-  },
-  {
-    patientId: 'PAT-1095',
-    fullName: 'Sunita Verma',
-    age: 52,
-    gender: 'Female',
-    contact: '+91 96543 21098',
-    allergies: ['Aspirin']
-  }
-];
-
-const INITIAL_APPOINTMENTS = [
-  {
-    id: 'apt_34',
-    tokenNumber: 34,
-    tokenDisplay: 'A34',
-    patientId: 'PAT-1092',
-    patientName: 'Rahul Sharma',
-    age: 34,
-    gender: 'Male',
-    allergies: ['Penicillin'],
-    status: 'In Consultation', // PRD FR-2.2
-    reason: 'High fever 101F, dry cough for 3 days',
-    doctorName: 'Dr. Sarah Mitchell',
-    createdAt: new Date().toISOString(),
-    estimatedTime: 'Now Serving'
-  },
-  {
-    id: 'apt_35',
-    tokenNumber: 35,
-    tokenDisplay: 'A35',
-    patientId: 'PAT-1093',
-    patientName: 'Priya Patel',
-    age: 45,
-    gender: 'Female',
-    allergies: ['Sulfa Drugs'],
-    status: 'Waiting', // PRD FR-2.2
-    reason: 'Bilateral knee pain, morning stiffness',
-    doctorName: 'Dr. Sarah Mitchell',
-    createdAt: new Date(Date.now() + 15 * 60000).toISOString(),
-    estimatedTime: '10:45 AM'
-  },
-  {
-    id: 'apt_36',
-    tokenNumber: 36,
-    tokenDisplay: 'A36',
-    patientId: 'PAT-1094',
-    patientName: 'Amit Kumar',
-    age: 28,
-    gender: 'Male',
-    allergies: ['None reported'],
-    status: 'Waiting',
-    reason: 'Routine health checkup & blood pressure evaluation',
-    doctorName: 'Dr. Sarah Mitchell',
-    createdAt: new Date(Date.now() + 30 * 60000).toISOString(),
-    estimatedTime: '11:00 AM'
-  },
-  {
-    id: 'apt_37',
-    tokenNumber: 37,
-    tokenDisplay: 'A37',
-    patientId: 'PAT-1095',
-    patientName: 'Sunita Verma',
-    age: 52,
-    gender: 'Female',
-    allergies: ['Aspirin'],
-    status: 'Waiting',
-    reason: 'Diabetes follow-up & HbA1c review',
-    doctorName: 'Dr. Sarah Mitchell',
-    createdAt: new Date(Date.now() + 45 * 60000).toISOString(),
-    estimatedTime: '11:15 AM'
-  }
-];
-
-const INITIAL_REMINDERS = [
-  {
-    id: 'rem_1',
-    patientId: 'PAT-1092',
-    title: 'Metformin - 1-0-1',
-    dosage: '500 mg',
-    time: '8:00 PM',
-    timingCategory: 'Evening / Post Dinner',
-    isActive: true, // PRD FR-4.2
-    instruction: 'Take with or immediately after meals'
-  },
-  {
-    id: 'rem_2',
-    patientId: 'PAT-1092',
-    title: 'Paracetamol - 1-1-1',
-    dosage: '650 mg',
-    time: '2:00 PM',
-    timingCategory: 'Afternoon',
-    isActive: true,
-    instruction: 'Only if fever > 100°F or body pain'
-  },
-  {
-    id: 'rem_3',
-    patientId: 'PAT-1092',
-    title: 'Azithromycin - 1-0-0',
-    dosage: '500 mg',
-    time: '9:00 AM',
-    timingCategory: 'Morning',
-    isActive: true,
-    instruction: '1 hour before breakfast with water'
-  },
-  {
-    id: 'rem_4',
-    patientId: 'PAT-1092',
-    title: 'Vitamin D3 Chewable (Weekly)',
-    dosage: '60,000 IU',
-    time: '10:00 AM',
-    timingCategory: 'Weekly Sunday',
-    isActive: false,
-    instruction: 'After milk or fatty meal'
-  }
-];
+// Clean initial state (Zero dummy demo patients or appointments)
+const INITIAL_PATIENTS = [];
+const INITIAL_APPOINTMENTS = [];
+const INITIAL_REMINDERS = [];
 
 export const ClinicProvider = ({ children }) => {
   const [patients, setPatients] = useState(() => {
     const saved = localStorage.getItem('mediflow_patients');
-    return saved ? JSON.parse(saved) : INITIAL_PATIENTS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed.filter(p => !p.patientId?.startsWith('PAT-109') && p.fullName !== 'Rahul Sharma') : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
   });
 
   const [appointments, setAppointments] = useState(() => {
     const saved = localStorage.getItem('mediflow_appointments');
-    return saved ? JSON.parse(saved) : INITIAL_APPOINTMENTS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed.filter(a => !a.patientId?.startsWith('PAT-109') && a.patientName !== 'Rahul Sharma') : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
   });
 
   const [reminders, setReminders] = useState(() => {
     const saved = localStorage.getItem('mediflow_reminders');
-    return saved ? JSON.parse(saved) : INITIAL_REMINDERS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed.filter(r => !r.patientId?.startsWith('PAT-109')) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
   });
 
   const [prescriptions, setPrescriptions] = useState(() => {
@@ -193,12 +80,13 @@ export const ClinicProvider = ({ children }) => {
     if (isRealFirebase && db) {
       const unsubAppts = onSnapshot(collection(db, 'appointments'), (snapshot) => {
         if (!snapshot.empty) {
-          const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const list = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(a => !a.patientId?.startsWith('PAT-109') && a.patientName !== 'Rahul Sharma');
           list.sort((a, b) => (a.tokenNumber || 0) - (b.tokenNumber || 0));
           setAppointments(list);
         } else {
-          // Auto-seed initial appointments into Firestore if collection is empty
-          INITIAL_APPOINTMENTS.forEach(a => addDoc(collection(db, 'appointments'), a).catch(() => {}));
+          setAppointments([]);
         }
       }, (err) => {
         console.warn('Firestore appointments listener error:', err.message);
@@ -206,11 +94,12 @@ export const ClinicProvider = ({ children }) => {
 
       const unsubReminders = onSnapshot(collection(db, 'reminders'), (snapshot) => {
         if (!snapshot.empty) {
-          const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const list = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(r => !r.patientId?.startsWith('PAT-109'));
           setReminders(list);
         } else {
-          // Auto-seed initial reminders into Firestore if collection is empty
-          INITIAL_REMINDERS.forEach(r => addDoc(collection(db, 'reminders'), r).catch(() => {}));
+          setReminders([]);
         }
       }, (err) => {
         console.warn('Firestore reminders listener error:', err.message);
@@ -218,11 +107,12 @@ export const ClinicProvider = ({ children }) => {
 
       const unsubPatients = onSnapshot(collection(db, 'patients'), (snapshot) => {
         if (!snapshot.empty) {
-          const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const list = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(p => !p.patientId?.startsWith('PAT-109') && p.fullName !== 'Rahul Sharma');
           setPatients(list);
         } else {
-          // Auto-seed initial patients into Firestore if collection is empty
-          INITIAL_PATIENTS.forEach(p => addDoc(collection(db, 'patients'), p).catch(() => {}));
+          setPatients([]);
         }
       }, (err) => {
         console.warn('Firestore patients listener error:', err.message);

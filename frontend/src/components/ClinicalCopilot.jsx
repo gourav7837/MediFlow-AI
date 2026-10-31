@@ -11,13 +11,18 @@ import {
   Thermometer, 
   Send,
   ShieldCheck,
-  RotateCcw
+  RotateCcw,
+  Mic
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { AmbientConsultationScribe } from './AmbientConsultationScribe';
 
 export const ClinicalCopilot = () => {
+  const { currentUser } = useAuth();
   const [patients, setPatients] = useState([]);
-  const [selectedPatientId, setSelectedPatientId] = useState('PAT-1092');
+  const [selectedPatientId, setSelectedPatientId] = useState('');
   const [patientDetails, setPatientDetails] = useState(null);
+  const [copilotMode, setCopilotMode] = useState('ambient');
   const [doctorNotes, setDoctorNotes] = useState(
     'Patient has 101 fever, dry cough for 3 days, bp normal 120/80, pulse 84. Known penicillin allergy. Prescribe paracetamol 650mg and azithromycin.'
   );
@@ -133,8 +138,44 @@ export const ClinicalCopilot = () => {
         </div>
       )}
 
-      {/* Main Dual Grid: Doctor Raw Input vs Copilot Intelligence */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+      {/* Mode Switcher Tabs */}
+      <div className="flex flex-wrap items-center gap-3 border-b border-slate-200/80 pb-3">
+        <button
+          onClick={() => setCopilotMode('ambient')}
+          className={`flex items-center space-x-2 px-5 py-2.5 rounded-2xl text-xs font-black transition-all ${
+            copilotMode === 'ambient'
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+          }`}
+        >
+          <Mic className="w-4 h-4 text-cyan-300" />
+          <span>🎙️ Ambient Conversation Scribe (Live Voice & Dialogue)</span>
+          <span className="ml-1 text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-extrabold">NEW</span>
+        </button>
+
+        <button
+          onClick={() => setCopilotMode('notes')}
+          className={`flex items-center space-x-2 px-5 py-2.5 rounded-2xl text-xs font-black transition-all ${
+            copilotMode === 'notes'
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+          }`}
+        >
+          <FileText className="w-4 h-4 text-blue-600" />
+          <span>📝 Clinical Shorthand Notes & Chart Synthesizer</span>
+        </button>
+      </div>
+
+      {copilotMode === 'ambient' ? (
+        <AmbientConsultationScribe
+          patientName={patientDetails?.patient?.fullName || 'Active Patient'}
+          patientId={selectedPatientId}
+          doctorName={currentUser?.name || 'Attending Physician'}
+          isOpenDefault={true}
+        />
+      ) : (
+        /* Main Dual Grid: Doctor Raw Input vs Copilot Intelligence */
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         
         {/* LEFT COLUMN: Consultation Scratchpad */}
         <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
@@ -276,6 +317,7 @@ export const ClinicalCopilot = () => {
         </div>
 
       </div>
+    )}
 
     </div>
   );

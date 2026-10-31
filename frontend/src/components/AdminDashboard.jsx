@@ -196,22 +196,8 @@ export const AdminDashboard = ({ onNavigate, onOpenRegister, onOpenBook }) => {
     };
   });
 
-  const fallbackSchedule = [
-    { id: 'f1', time: '09:00 AM', name: 'Rahul Sharma', detail: 'General Consultation', label: 'Check-in', cls: 'bg-blue-100 text-blue-700 border-blue-200' },
-    { id: 'f2', time: '09:30 AM', name: 'Neha Gupta', detail: 'Follow-up Visit', label: 'In Room', cls: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-    { id: 'f3', time: '10:15 AM', name: 'Amit Verma', detail: 'Cardiology', label: 'Upcoming', cls: 'bg-slate-100 text-slate-600 border-slate-200' },
-    { id: 'f4', time: '11:00 AM', name: 'Sneha Patel', detail: 'Orthopedics', label: 'Upcoming', cls: 'bg-slate-100 text-slate-600 border-slate-200' },
-    { id: 'f5', time: '11:30 AM', name: 'Vikram Singh', detail: 'Skin Consultation', label: 'Upcoming', cls: 'bg-slate-100 text-slate-600 border-slate-200' }
-  ];
-
-  const schedule = liveSchedule.length ? liveSchedule : fallbackSchedule;
-
-  const doctors = statsData?.doctorAvailability || [
-    { name: 'Dr. Rajesh Sharma', specialization: 'Internal Medicine', status: 'Available' },
-    { name: 'Dr. Sarah Mitchell', specialization: 'General Practice', status: 'In Consultation' },
-    { name: 'Dr. Ananya Roy', specialization: 'Orthopedics', status: 'Available' },
-    { name: 'Dr. Karan Mehta', specialization: 'Pediatrics', status: 'Off Duty' }
-  ];
+  const schedule = liveSchedule;
+  const doctors = statsData?.doctorAvailability || [];
 
   const pillCls = (status = '') =>
     status === 'Available'
@@ -409,23 +395,31 @@ export const AdminDashboard = ({ onNavigate, onOpenRegister, onOpenBook }) => {
                 </button>
               </div>
 
-              <ul className="space-y-4">
-                {schedule.map((item) => (
-                  <li key={item.id} className="flex items-center gap-3">
-                    <span className="text-[11px] font-bold text-slate-500 w-16 shrink-0">{item.time}</span>
-                    <span className={`w-9 h-9 rounded-full ${AVATAR_COLORS[(initialsOf(item.name).charCodeAt(0)) % AVATAR_COLORS.length]} text-white text-[10px] font-extrabold grid place-items-center shrink-0`}>
-                      {initialsOf(item.name)}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-slate-900 truncate">{item.name}</p>
-                      <p className="text-[11px] text-slate-500 truncate">{item.detail}</p>
-                    </div>
-                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold border shrink-0 ${item.cls}`}>
-                      {item.label}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              {schedule.length === 0 ? (
+                <div className="py-8 text-center text-slate-400">
+                  <Calendar className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                  <p className="text-xs font-bold text-slate-600">No appointments scheduled today</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">New bookings will appear here automatically.</p>
+                </div>
+              ) : (
+                <ul className="space-y-4">
+                  {schedule.map((item) => (
+                    <li key={item.id} className="flex items-center gap-3">
+                      <span className="text-[11px] font-bold text-slate-500 w-16 shrink-0">{item.time}</span>
+                      <span className={`w-9 h-9 rounded-full ${AVATAR_COLORS[(initialsOf(item.name).charCodeAt(0)) % AVATAR_COLORS.length]} text-white text-[10px] font-extrabold grid place-items-center shrink-0`}>
+                        {initialsOf(item.name)}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-slate-900 truncate">{item.name}</p>
+                        <p className="text-[11px] text-slate-500 truncate">{item.detail}</p>
+                      </div>
+                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold border shrink-0 ${item.cls}`}>
+                        {item.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
@@ -530,24 +524,31 @@ export const AdminDashboard = ({ onNavigate, onOpenRegister, onOpenBook }) => {
               </button>
             </div>
 
-            <ul className="space-y-3.5">
-              {doctors.slice(0, 5).map((doc, idx) => (
-                <li key={doc.doctorId || doc.name || idx} className="flex items-center gap-3">
-                  <span className={`w-9 h-9 rounded-full ${AVATAR_COLORS[idx % AVATAR_COLORS.length]} text-white text-[10px] font-extrabold grid place-items-center shrink-0`}>
-                    {initialsOf(doc.name)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-bold text-slate-900 truncate">{doc.name}</p>
-                    <p className="text-[11px] text-slate-500 truncate">
-                      {doc.specialization}{doc.room ? ` • Room ${doc.room}` : ''}
-                    </p>
-                  </div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold shrink-0 ${pillCls(doc.status)}`}>
-                    {doc.status}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {doctors.length === 0 ? (
+              <div className="py-6 text-center text-slate-400">
+                <p className="text-xs font-bold text-slate-600">No doctors registered yet</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Add doctors via Doctor Directory.</p>
+              </div>
+            ) : (
+              <ul className="space-y-3.5">
+                {doctors.slice(0, 5).map((doc, idx) => (
+                  <li key={doc.doctorId || doc.name || idx} className="flex items-center gap-3">
+                    <span className={`w-9 h-9 rounded-full ${AVATAR_COLORS[idx % AVATAR_COLORS.length]} text-white text-[10px] font-extrabold grid place-items-center shrink-0`}>
+                      {initialsOf(doc.name)}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-bold text-slate-900 truncate">{doc.name}</p>
+                      <p className="text-[11px] text-slate-500 truncate">
+                        {doc.specialization}{doc.room ? ` • Room ${doc.room}` : ''}
+                      </p>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold shrink-0 ${pillCls(doc.status)}`}>
+                      {doc.status}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Recent Activities */}
@@ -581,36 +582,10 @@ export const AdminDashboard = ({ onNavigate, onOpenRegister, onOpenBook }) => {
                     );
                   })
                 : (
-                  <>
-                    <li className="flex items-start gap-3">
-                      <span className="w-8 h-8 rounded-full grid place-items-center shrink-0 bg-blue-50 text-blue-600"><UserPlus className="w-4 h-4" /></span>
-                      <div>
-                        <p className="text-[13px] font-bold text-slate-900">New patient registered</p>
-                        <p className="text-[11px] text-slate-500">Rahul Sharma · 2 mins ago</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="w-8 h-8 rounded-full grid place-items-center shrink-0 bg-emerald-50 text-emerald-600"><CalendarCheck className="w-4 h-4" /></span>
-                      <div>
-                        <p className="text-[13px] font-bold text-slate-900">Appointment booked via AI Voice</p>
-                        <p className="text-[11px] text-slate-500">Neha Gupta · 15 mins ago</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="w-8 h-8 rounded-full grid place-items-center shrink-0 bg-violet-50 text-violet-600"><FileUp className="w-4 h-4" /></span>
-                      <div>
-                        <p className="text-[13px] font-bold text-slate-900">Medical report uploaded</p>
-                        <p className="text-[11px] text-slate-500">Amit Verma · 32 mins ago</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="w-8 h-8 rounded-full grid place-items-center shrink-0 bg-emerald-50 text-emerald-600"><CheckCircle2 className="w-4 h-4" /></span>
-                      <div>
-                        <p className="text-[13px] font-bold text-slate-900">Consultation completed</p>
-                        <p className="text-[11px] text-slate-500">Priya Desai · 1 hr ago</p>
-                      </div>
-                    </li>
-                  </>
+                  <li className="py-6 text-center text-slate-400">
+                    <p className="text-xs font-bold text-slate-500">No recent activity recorded</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Actions will appear in the audit trail.</p>
+                  </li>
                 )}
             </ul>
           </div>
